@@ -18,6 +18,6 @@
 pip install -r requirements.txt
 ```
 
-配置以下(自行抓):
+配置以下(自行抓,**主要是调试怕被封号,没有多余的wx号**):
 ![config](./img/config.png)
-调试怕被封号,运行main.py
+运行main.py
