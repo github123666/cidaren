@@ -1,6 +1,19 @@
 ## 有问题issues
-还处在初期阶段,后面慢慢更新,有好的获取思路可以issues
+还处在初期阶段,后面慢慢更新,有好的获取sign思路可以issues  
+仅适合会抓包的使用
 ## 日志
+**2023-12-22**
++ 修复单选bug  
++ 修复填充单词bug
+
+**2023-12-21**
+
++ 汉译英
++ 英译汉
++ 听力
++ 填写句子
++ complete单词
++ 稳定85分以上
 
 **2023-12-19**
 
@@ -13,6 +26,12 @@
 请遵循MIT协议
 
 ## 使用
+目前只有CET4书的测试  
+动态调试怕封号(静态也看不明白),有几个sign没解出来如:选择测试的单词的sign，所以要有如下准备:
+1. 自行勾选单词并过听力
+2. 抓取task_id(作用获取该单元所有单词,获取题目)
+3. 自行填写是第几单元
+4. 有时会出现个别单词答不出来,自行解决
 
 ```angular2html
 pip install -r requirements.txt
@@ -20,4 +39,6 @@ pip install -r requirements.txt
 
 配置以下(自行抓,**主要是调试怕被封号,没有多余的wx号**):
 ![config](./img/config.png)
-运行main.py
+运行main.py   
+![result](./img/result.png)
+![result](./img/result2.png)

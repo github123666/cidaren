@@ -4,6 +4,9 @@ class PublicInfo:
         self.word_query_result = ''
         self.word_means = ''
         self.exam = ''
+        self.word_list = ''
+        self.get_word_list_result: ''
+        self.zh_en = ''
 
     @property
     # only read
@@ -19,4 +22,3 @@ class PublicInfo:
     # only del
     def topic_code(self):
         del self._topic_code
-
