@@ -8,4 +8,4 @@ def word_revert(word: str) -> str:
     for token in doc:
         return token.lemma_
 if __name__ == '__main__':
-    print(word_revert('accustomed'))
+    print(word_revert('embarrassed'))

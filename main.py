@@ -1,10 +1,13 @@
+import random
 import re
 import time
 
-from api.api_all import get_exam, query_word, submit_result, next_exam, get_word_list
+from api.basic_api import get_all_unit, get_unit_id
+from api.main_api import get_exam, query_word, submit_result, next_exam, select_all_word
 from api.translate import zh_en
 from log.log import Log
 from publicInfo.publicInfo import PublicInfo
+from util.basic_utll import filler_not_complete_unit
 from util.handle_word_list import handle_word_result
 from util.select_mean import select_mean, handle_query_word_mean, filler_option
 from util.word_revert import word_revert
@@ -20,11 +23,18 @@ def submit(public_info: PublicInfo, option: int):
     next_exam(public_info)
 
 
+def jump_read(public_info):
+    time.sleep(random.randint(1, 3))
+    main.logger.info("跳过阅读单词卡片")
+    next_exam(public_info)
+    public_info.topic_code = public_info.exam['topic_code']
+
+
 # mean form word
 def select_word(public_info) -> int or str:
     main.logger.info("汉译英")
-    word_mean = public_info.exam['stem']['remark']
-    print(word_mean)
+    word_mean = public_info.exam['stem']['remark'].replace('……', '')
+    main.logger.info(word_mean)
     # option word
     zh_en(public_info, word_mean)
     return ",".join(public_info.zh_en.split())
@@ -71,6 +81,7 @@ def together_word(public_info):
     public_info.topic_code = public_info.exam['topic_code']
 
 
+# full word
 def complete_sentence(public_info):
     main.logger.info("完成单词")
     word_len = public_info.exam['w_lens'][0]
@@ -85,38 +96,51 @@ def run():
     # init public info
     main.logger.info("初始化公共组件")
     public_info = PublicInfo()
-    # get first topic_code
-    get_exam(public_info)
-    public_info.topic_code = public_info.exam['topic_code']
-    main.logger.info("开始答题")
-    main.logger.info("获取该单元所有单词")
-    get_word_list(public_info)
-    main.logger.info("处理words")
-    handle_word_result(public_info)
-    # main.logger.info("选择该单元所有单词")
-    # select_all_word(public_info.word_list)
-    i = 0
-    # topic_mode
-    while 100 > i:
-        main.logger.info("获取题目类型")
-        mode = public_info.exam['topic_mode']
-        if mode == 32:
-            option = select_word(public_info)
-        elif mode == 11 or mode == 22:
-            option = word_form_mean(public_info)
-        elif mode == 31:
-            together_word(public_info)
-            continue
-        elif mode == 51:
-            option = complete_sentence(public_info)
-        else:
-            option = 0
-            print(public_info.exam)
-            main.logger.info("其他模式,已退出")
-            exit(-1)
-        time.sleep(1)
-        submit(public_info, option)
-        i += 1
+    # get all unit
+    main.logger.info("获取所有单元的信息")
+    get_all_unit(public_info)
+    # get not complete
+    filler_not_complete_unit(public_info)
+    main.logger.info(f"没有完成的单元{public_info.not_complete_unit}")
+    for unit, value in public_info.not_complete_unit.items():
+        main.logger.info(f"获取该{unit}单元的task_id")
+        public_info.now_unit = unit
+        get_unit_id(public_info)
+        main.logger.info("处理words")
+        handle_word_result(public_info)
+        main.logger.info("选择该单元所有单词")
+        # {"CET4_pre:CET4_pre_10":["survey","apply","defasdfa"]} word
+        if value == 0:
+            select_all_word(f"CET4_pre:{unit}", public_info.word_list, public_info.task_id)
+        # get first exam
+        get_exam(public_info)
+        public_info.topic_code = public_info.exam['topic_code']
+        main.logger.info("开始答题")
+        i = 0
+        # topic_mode
+        while 100 > i:
+            main.logger.info("获取题目类型")
+            mode = public_info.exam['topic_mode']
+            if mode == 0:
+                jump_read(public_info)
+                continue
+            elif mode == 32:
+                option = select_word(public_info)
+            elif mode == 11 or mode == 22:
+                option = word_form_mean(public_info)
+            elif mode == 31:
+                together_word(public_info)
+                continue
+            elif mode == 51:
+                option = complete_sentence(public_info)
+            else:
+                option = 0
+                print(public_info.exam)
+                main.logger.info("其他模式,已退出")
+                exit(-1)
+            time.sleep(1)
+            submit(public_info, option)
+            i += 1
 
 
 if __name__ == '__main__':

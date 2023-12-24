@@ -4,9 +4,16 @@ class PublicInfo:
         self.word_query_result = ''
         self.word_means = ''
         self.exam = ''
+        # all word
         self.word_list = ''
         self.get_word_list_result: ''
+        # translate
         self.zh_en = ''
+        # all unit info
+        self.all_unit = ''
+        self.not_complete_unit = {}
+        self.task_id = ''
+        self.now_unit = ''
 
     @property
     # only read
