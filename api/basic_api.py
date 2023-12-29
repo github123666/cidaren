@@ -1,4 +1,4 @@
-from api.request_header import rqs_session
+import api.request_header as requests
 from log.log import Log
 from util.create_timestamp import create_timestamp
 
@@ -19,7 +19,7 @@ def handle_response(response):
 def get_all_unit(public_info):
     timestamp = create_timestamp()
     url = f'StudyTask/List?course_id=CET4_pre&timestamp={timestamp}&version=2.6.1.231204&app_type=1'
-    rsp = rqs_session.get(basic_url + url)
+    rsp = requests.rqs_session.get(basic_url + url)
     # check response is success
     handle_response(rsp)
     public_info.all_unit = rsp.json()['data']
@@ -28,7 +28,7 @@ def get_all_unit(public_info):
 def get_unit_id(public_info):
     timestamp = create_timestamp()
     url = f'StudyTask/Info?task_id=-1&course_id=CET4_pre&list_id={public_info.now_unit}&timestamp={timestamp}&version=2.6.1.231204&app_type=1'
-    rsp = rqs_session.get(basic_url + url)
+    rsp = requests.rqs_session.get(basic_url + url)
     # check request is success
     handle_response(rsp)
     rsp_json = rsp.json()

@@ -1,6 +1,14 @@
 ## 有问题issues
-`词达人全自动,还在测试阶段,使用需要抓取token`
+`词达人全自动过自学任务`
 ## 日志
+**2023-12-26**
++ 添加无需抓包的方法
+**2023-12-24**
++ 修复服务器放回错误数据
+
+**2023-12-24**
++ 修复补全单词bug
+
 **2023-12-23**
 + 新增选择全部单词
 + 过单词阅读卡片
@@ -34,7 +42,17 @@
 请遵循MIT协议,仅供学习参考
 
 ## 使用
-目前只有CET4书的测试,token需要自己抓取
+方法一：获取微信code,拼手速,点下面授权cdr的链接标签页转一圈半就关掉,打开其他网页百度什么的,查看浏览记录
+![img.png](img/img.png)
+```angular2html
+https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&redirect_uri=https%3A%2F%2Fapp.vocabgo.com%2Fstudent%2F%3Fauthorize%3D2&response_type=code&scope=snsapi_userinfo&state=STATE
+```
+方法二:  
+自己抓包,抓token 
+
+配置config.json
+
+目前只有CET4书的测试
 ```angular2html
 pip install -r requirements.txt
 ```

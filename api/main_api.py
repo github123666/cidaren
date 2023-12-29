@@ -1,6 +1,6 @@
 import json
 
-from api.request_header import rqs_session, rqs2_session, rqs3_session
+import api.request_header as requests
 from decryptencrypt.debase64 import debase64
 from decryptencrypt.encrypt_md5 import encrypt_md5
 from log.log import Log
@@ -14,8 +14,13 @@ basic_url = 'https://app.vocabgo.com/student/api/Student/'
 
 # response is 200
 def handle_response(response):
-    if response.json()['code'] == 1:
+    rsp_json = response.json()
+    code = rsp_json['code']
+    if code == 1:
         api.logger.info(f"请求成功{response.content}")
+    # complete exam
+    elif code == 20001 and rsp_json['data']:
+        pass
     else:
         api.logger.info(f"请求有问题{response.text}退出程序")
         exit(-1)
@@ -33,7 +38,7 @@ def select_all_word(key, word_list, task_id: int) -> None:
         key: word_list}, "chose_err_item": 2,
             "timestamp": timestamp, "version": "2.6.1.231204", "sign": sign,
             "app_type": 1}
-    rsp = rqs3_session.post(basic_url + url, data=json.dumps(data))
+    rsp = requests.rqs3_session.post(basic_url + url, data=json.dumps(data))
     # check request is success
     handle_response(rsp)
 
@@ -43,7 +48,7 @@ def get_exam(public_info):
     api.logger.info("获取第一个topic_code")
     url = f'StudyTask/StartAnswer?task_id={public_info.task_id}&task_type=3&course_id=CET4_pre&opt_img_w=' \
           f'1704&opt_font_size=94&opt_font_c=%23000000&it_img_w=2002&it_font_size=106&timestamp={create_timestamp()}&version=2.6.1.231204&app_type=1'
-    rsp = rqs_session.get(basic_url + url)
+    rsp = requests.rqs_session.get(basic_url + url)
     # check response is success
     handle_response(rsp)
     #  decrypt response
@@ -65,17 +70,20 @@ def next_exam(public_info):
         "topic_code": topic_code,
         "timestamp": timestamp, "version": "2.6.1.231204", "sign": sign,
         "app_type": 1}
-    rsp = rqs2_session.post(basic_url + url, data=json.dumps(data))
+    rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(data))
     # check request is success
     handle_response(rsp)
+    if rsp.json()['msg'] == '需要选词！':
+        public_info.exam = 'complete'
     # decrypt response
-    public_info.exam = debase64(rsp.json())
+    else:
+        public_info.exam = debase64(rsp.json())
 
 
 # query word
 def query_word(public_info, word):
     url = f'Course/StudyWordInfo?course_id=CET4_pre&list_id={public_info.now_unit}&word={word}&timestamp={create_timestamp()}&version=2.6.1.231204&app_type=1'
-    rsp = rqs_session.get(basic_url + url)
+    rsp = requests.rqs_session.get(basic_url + url)
     # check request is success
     handle_response(rsp)
     # decrypt  response
@@ -96,7 +104,7 @@ def submit_result(public_info, option):
             "timestamp": timestamp, "version": "2.6.1.231204", "sign": sign,
             "app_type": 1}
     print(data)
-    rsp = rqs2_session.post(basic_url + url, data=json.dumps(data))
+    rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(data))
     # check request is success
     handle_response(rsp)
     api.logger.info("提取下一题的请求参数")

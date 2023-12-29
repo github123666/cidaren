@@ -7,5 +7,7 @@ def word_revert(word: str) -> str:
     doc = nlp(word)
     for token in doc:
         return token.lemma_
+
+
 if __name__ == '__main__':
-    print(word_revert('embarrassed'))
+    print(word_revert('undergone'))

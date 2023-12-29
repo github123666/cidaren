@@ -1,8 +1,10 @@
+import os
 import random
 import re
 import time
 
 from api.basic_api import get_all_unit, get_unit_id
+from api.login import verify_token, get_token
 from api.main_api import get_exam, query_word, submit_result, next_exam, select_all_word
 from api.translate import zh_en
 from log.log import Log
@@ -85,17 +87,30 @@ def together_word(public_info):
 def complete_sentence(public_info):
     main.logger.info("完成单词")
     word_len = public_info.exam['w_lens'][0]
+    # submit not  case sensitive
     word_start_with = public_info.exam['w_tip'].lower()
     for word in public_info.word_list:
-        if word.startswith(word_start_with) and len(word) == word_len:
+        if word.startswith(word_start_with):
             main.logger.info(word)
-            return word
+            if len(word) == word_len:
+                return word
+            elif len(word) + 1 == word_len:
+                return word + 's'
 
 
 def run():
     # init public info
     main.logger.info("初始化公共组件")
-    public_info = PublicInfo()
+    public_info = PublicInfo(path)
+    # get token
+    token = public_info.token
+    if token:
+        # 验证token 是否过期
+        if not verify_token(token):
+            get_token(public_info)
+    else:
+        # use code get token
+        get_token(public_info)
     # get all unit
     main.logger.info("获取所有单元的信息")
     get_all_unit(public_info)
@@ -120,6 +135,8 @@ def run():
         # topic_mode
         while 100 > i:
             main.logger.info("获取题目类型")
+            if public_info.exam == 'complete':
+                break
             mode = public_info.exam['topic_mode']
             if mode == 0:
                 jump_read(public_info)
@@ -146,5 +163,7 @@ def run():
 if __name__ == '__main__':
     # 初始化日志记录
     main = Log("main")
-    main.logger.info('开始执行')
+    main.logger.info('开始登录')
+    # path
+    path = os.path.dirname(__file__)
     run()
