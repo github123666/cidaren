@@ -56,7 +56,6 @@ https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&red
 ```angular2html
 pip install -r requirements.txt
 ```
-配置 api/request_header.py 里面headers的token  
 运行main.py   
 ![result](./img/result.png)
 ![result](./img/result2.png)
