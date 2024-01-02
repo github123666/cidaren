@@ -3,7 +3,7 @@ import random
 import re
 import time
 
-from api.basic_api import get_all_unit, get_unit_id
+from api.basic_api import get_all_unit, get_unit_id, get_select_course
 from api.login import verify_token, get_token
 from api.main_api import get_exam, query_word, submit_result, next_exam, select_all_word
 from api.translate import zh_en
@@ -111,6 +111,8 @@ def run():
     else:
         # use code get token
         get_token(public_info)
+    # get course id
+    get_select_course(public_info)
     # get all unit
     main.logger.info("获取所有单元的信息")
     get_all_unit(public_info)
@@ -120,25 +122,29 @@ def run():
     for unit, value in public_info.not_complete_unit.items():
         main.logger.info(f"获取该{unit}单元的task_id")
         public_info.now_unit = unit
-        get_unit_id(public_info)
+        get_unit_id(public_info)  # return self unit all word
         main.logger.info("处理words")
         handle_word_result(public_info)
         main.logger.info("选择该单元所有单词")
         # {"CET4_pre:CET4_pre_10":["survey","apply","defasdfa"]} word
+        # not complete unit choice all  word
         if value == 0:
-            select_all_word(f"CET4_pre:{unit}", public_info.word_list, public_info.task_id)
+            select_all_word(f"{public_info.course_id}:{unit}", public_info.word_list, public_info.task_id)
         # get first exam
         get_exam(public_info)
         public_info.topic_code = public_info.exam['topic_code']
         main.logger.info("开始答题")
         i = 0
         # topic_mode
-        while 100 > i:
+        while True:
             main.logger.info("获取题目类型")
             if public_info.exam == 'complete':
+                # unit complete skip next unit
                 break
             mode = public_info.exam['topic_mode']
+            # handle answer (choice)
             if mode == 0:
+                # skip read cord
                 jump_read(public_info)
                 continue
             elif mode == 32:
@@ -156,6 +162,7 @@ def run():
                 main.logger.info("其他模式,已退出")
                 exit(-1)
             time.sleep(1)
+            # submit answer
             submit(public_info, option)
             i += 1
 

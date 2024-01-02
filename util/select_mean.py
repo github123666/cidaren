@@ -1,3 +1,5 @@
+import re
+
 from log.log import Log
 
 # log module
@@ -6,8 +8,11 @@ select_module = Log("select_module")
 
 def handle_query_word_mean(public_info) -> None:
     means = []
-    for mean in public_info.word_query_result['means']:
-        means.append(' '.join(mean['mean']))
+    # for mean in public_info.word_query_result['means']:
+    for mean in public_info.word_query_result['options']:
+        # means.append(' '.join(mean['mean']))
+        means.append(mean['content']['mean'])
+        means.append(re.sub("（.*）", "", mean['content']['mean']))
     public_info.word_means = means
 
 
@@ -26,9 +31,6 @@ def select_mean(public_info) -> int:
     for index, option in enumerate(options, 0):
         for mean in public_info.word_means:
             # exam option content is disorder,re-order
-            if sorted(option) == sorted(mean):
+            if sorted(option.replace(" ", '')) == sorted(mean.replace(" ", '')) or mean in option:
                 select_module.logger.info(f"匹配选项{option}")
                 return index
-
-# def select_word(public_info):
-

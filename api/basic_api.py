@@ -16,9 +16,18 @@ def handle_response(response):
         exit(-1)
 
 
+def get_select_course(public_info):
+    url = 'Main?timestamp=1704182548197&version=2.6.1.231204&app_type=1'
+    rsp = requests.rqs_session.get(basic_url + url)
+    # check request is success
+    handle_response(rsp)
+    # course id
+    public_info.course_id = rsp.json()['data']['user_info']['course_id']
+
+
 def get_all_unit(public_info):
     timestamp = create_timestamp()
-    url = f'StudyTask/List?course_id=CET4_pre&timestamp={timestamp}&version=2.6.1.231204&app_type=1'
+    url = f'StudyTask/List?course_id={public_info.course_id}&timestamp={timestamp}&version=2.6.1.231204&app_type=1'
     rsp = requests.rqs_session.get(basic_url + url)
     # check response is success
     handle_response(rsp)
@@ -27,7 +36,7 @@ def get_all_unit(public_info):
 
 def get_unit_id(public_info):
     timestamp = create_timestamp()
-    url = f'StudyTask/Info?task_id=-1&course_id=CET4_pre&list_id={public_info.now_unit}&timestamp={timestamp}&version=2.6.1.231204&app_type=1'
+    url = f'StudyTask/Info?task_id=-1&course_id={public_info.course_id}&list_id={public_info.now_unit}&timestamp={timestamp}&version=2.6.1.231204&app_type=1'
     rsp = requests.rqs_session.get(basic_url + url)
     # check request is success
     handle_response(rsp)

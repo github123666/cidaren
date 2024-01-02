@@ -26,6 +26,9 @@ def handle_response(response):
         exit(-1)
 
 
+
+
+
 # select all word exam
 def select_all_word(key, word_list, task_id: int) -> None:
     api.logger.info("勾选全部单词并提交")
@@ -45,8 +48,8 @@ def select_all_word(key, word_list, task_id: int) -> None:
 
 # start
 def get_exam(public_info):
-    api.logger.info("获取第一个topic_code")
-    url = f'StudyTask/StartAnswer?task_id={public_info.task_id}&task_type=3&course_id=CET4_pre&opt_img_w=' \
+    api.logger.info("获取第一个题topic_code")
+    url = f'StudyTask/StartAnswer?task_id={public_info.task_id}&task_type=3&course_id={public_info.course_id}&opt_img_w=' \
           f'1704&opt_font_size=94&opt_font_c=%23000000&it_img_w=2002&it_font_size=106&timestamp={create_timestamp()}&version=2.6.1.231204&app_type=1'
     rsp = requests.rqs_session.get(basic_url + url)
     # check response is success
@@ -82,7 +85,7 @@ def next_exam(public_info):
 
 # query word
 def query_word(public_info, word):
-    url = f'Course/StudyWordInfo?course_id=CET4_pre&list_id={public_info.now_unit}&word={word}&timestamp={create_timestamp()}&version=2.6.1.231204&app_type=1'
+    url = f'Course/StudyWordInfo?course_id={public_info.course_id}&list_id={public_info.now_unit}&word={word}&timestamp={create_timestamp()}&version=2.6.1.231204&app_type=1'
     rsp = requests.rqs_session.get(basic_url + url)
     # check request is success
     handle_response(rsp)
