@@ -7,7 +7,7 @@
 - [ ] 转原型的第三方库不是很好用
 - [ ] 提高正确率
 
-<details> <summary> **日志(点击查看进程)** </summary>
+<details> <summary> <b>日志(点击查看进程)</b> </summary>
 
 **目前存在的bug**  
 + 环境问题,google要挂梯子
