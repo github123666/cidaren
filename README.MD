@@ -60,7 +60,7 @@
 
 ## 使用
 **Tip1**:有些单词(什么双写加ing的.....)会提交不了,需要手动提交.**推荐刷分使用**   
-**Tip2**:开梯子运行(有个题型走的google翻译)
+**Tip2**:开梯子运行(有个题型走的google翻译)    
 方法一：获取微信code,拼手速,点下面授权cdr的链接标签页转一圈半就关掉,打开其他网页百度什么的,查看浏览记录(**没有跳转到 cdr home 页面的记录则为成功**) 
 
 配置config.json      
@@ -78,6 +78,8 @@ https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&red
 ```angular2html
 pip install -r requirements.txt
 ```
-运行main.py (大概每五秒提交一次答案)
+运行main.py (大概每五秒提交一次答案)  
+  
 ![result](./img/result.png)
+  
 ![result](./img/result2.png)
