@@ -20,7 +20,7 @@ class PublicInfo:
         self.all_unit = ''
         self.not_complete_unit = {}
         self.task_id = ''
-        self.tnow_unit = ''
+        self.now_unit = ''
         self.course_id = ''
         # token
 

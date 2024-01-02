@@ -14,7 +14,7 @@ login = Log("login")
 def get_token(public_info):
     # init requests header
     requests.set_token('null')
-    code = public_info if public_info.code else exit('code不存在')
+    code = public_info.code if public_info.code else exit('code不存在')
     url = 'Auth/Wechat/LoginByWechatCode'
     timestamp = create_timestamp()
     sign = encrypt_md5(
