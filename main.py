@@ -152,7 +152,7 @@ def run():
                 option = complete_sentence(public_info)
             else:
                 option = 0
-                print(public_info.exam)
+                main.logger.info(public_info.exam)
                 main.logger.info("其他模式,已退出")
                 exit(-1)
             time.sleep(1)

@@ -6,3 +6,5 @@ import base64
 str_ = str_[32:]
 data = base64.b64decode(str_).decode("utf-8")
 print(data)
+print('3.50'.isdigit())
+import calendar
