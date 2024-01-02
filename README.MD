@@ -1,9 +1,9 @@
 ## 有问题issues
 `词达人刷分脚本`
-- [x] 修复已知bug
-- [x] 扩展脚本
-- [x] 汉转英没有好的接口(目前只能利用google,正确率不高的原因)
-- [x] 转原型的第三方库不是很好用
+- [ ] 修复已知bug
+- [ ] 扩展脚本
+- [ ] 汉转英没有好的接口(目前只能利用google,正确率不高的原因)
+- [ ] 转原型的第三方库不是很好用
 - [x] 自动过自学任务
 
 <details> <summary> 日志 </summary>
@@ -57,6 +57,7 @@
 
 ## 使用
 方法一：获取微信code,拼手速,点下面授权cdr的链接标签页转一圈半就关掉,打开其他网页百度什么的,查看浏览记录,配置config.json
+code只能使用一次
 ![img.png](img/img.png)
 ```angular2html
 https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&redirect_uri=https%3A%2F%2Fapp.vocabgo.com%2Fstudent%2F%3Fauthorize%3D2&response_type=code&scope=snsapi_userinfo&state=STATE
