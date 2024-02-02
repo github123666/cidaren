@@ -1,6 +1,7 @@
 import json
 
 import api.request_header as requests
+from api.request_header import class_task_request
 from decryptencrypt.debase64 import debase64
 from decryptencrypt.encrypt_md5 import encrypt_md5
 from log.log import Log
@@ -26,9 +27,6 @@ def handle_response(response):
         exit(-1)
 
 
-
-
-
 # select all word exam
 def select_all_word(key, word_list, task_id: int) -> None:
     api.logger.info("勾选全部单词并提交")
@@ -44,6 +42,41 @@ def select_all_word(key, word_list, task_id: int) -> None:
     rsp = requests.rqs3_session.post(basic_url + url, data=json.dumps(data))
     # check request is success
     handle_response(rsp)
+
+
+# class task
+def get_class_task(public_info):
+    url = 'ClassTask/PageTask'
+    sign = "page_count=1&page_size=10&search_type=0&timestamp=1706873617859&version=2.6.1.240122ajfajfamsnfaflfasakljdlalkflak"
+    data = {
+        'search_type': '0',
+        'page_count': 1,
+        'page_size': 10,
+        'timestamp': create_timestamp(),
+        "version": "2.6.1.231204",
+        "sign": encrypt_md5(sign),
+        "app_type": 1
+    }
+    rsp = class_task_request.post(url=basic_url + url, json=data)
+    # check response is success
+    handle_response(rsp)
+    # sava public_info
+    public_info.class_task = rsp.json
+
+
+
+def get_class_exam(public_info):
+    api.logger.info("获取班级任务第一题")
+    url = 'ClassTask/StartAnswer'
+    param = {'task_id': '92586275', 'task_type': '2', 'release_id': '2116544', 'opt_img_w': '684',
+             'opt_font_size': '37', 'opt_font_c': '%23000000', 'it_img_w': '804', 'it_font_size': '42',
+             'timestamp': '1706862412764', 'version': '2.6.1.240122', 'app_type': '1'}
+    rsp = class_task_request.get(url=basic_url + url, param=param)
+    # check response is success
+    handle_response(rsp)
+    #  decrypt response
+    public_info.exam = debase64(rsp.json())
+    api.logger.info("写入成功")
 
 
 # start

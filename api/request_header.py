@@ -18,10 +18,11 @@ headers = {"Host": "app.vocabgo.com",
            "Accept-Encoding": "gzip, deflate, br"
            }
 
-rqs_session = rqs2_session = rqs3_session = ''
+rqs_session = rqs2_session = rqs3_session = class_task_request=''
 
 
 def set_token(token):
+    # update global value
     global Token
     Token = token
     global rqs_session, rqs2_session, rqs3_session
@@ -38,3 +39,6 @@ def set_token(token):
     rqs3_session.headers = headers.copy()
     rqs3_session.headers.update({"Origin": "https://app.vocabgo.com", 'Usertoken': Token,
                                  "Content-Type": "application/json", "Content-Length": "460"})
+    class_task_request = requests.session()
+    class_task_request.headers = rqs3_session.headers
+
