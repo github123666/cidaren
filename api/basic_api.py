@@ -43,3 +43,10 @@ def get_unit_id(public_info):
     rsp_json = rsp.json()
     public_info.task_id = rsp_json['data']['task_id']
     public_info.get_word_list_result = rsp_json
+
+
+def get_all_task(public_info):
+    url = '/Student/ClassTask/PageTask'
+    basic_api.logger.info('获取所有班级任务')
+
+

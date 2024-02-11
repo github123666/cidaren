@@ -3,6 +3,7 @@ import os
 
 
 class PublicInfo:
+
     def __init__(self, path):
         self.path = path
         with open(os.path.join(self.path, "config.json"), 'r', encoding='utf-8') as f:
@@ -22,7 +23,12 @@ class PublicInfo:
         self.task_id = ''
         self.now_unit = ''
         self.course_id = ''
-        # token
+        # class task
+        self.class_task = []
+        # unit task amount
+        self.task_total_count = ''
+        self.now_page = ''
+        self.release_id = ''
 
     @property
     # only read

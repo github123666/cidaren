@@ -3,7 +3,7 @@ import requests
 from decryptencrypt.encrypt_md5 import encrypt_md5
 
 Token = ''
-user_age = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309080f) XWEB/8501 Flue"
+user_age = 'Mozilla/5.0 (Linux; Android 7.1.2; LIO-AN00 Build/LIO-AN00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.131 Safari/537.36 MMWEBID/4462 MicroMessenger/8.0.20.2100(0x28001438) Process/toolsmp WeChat/arm32 Weixin Android Tablet NetType/WIFI Language/zh_CN ABI/arm64'
 headers = {"Host": "app.vocabgo.com",
            "Accept": "application/json, text/plain, */*",
            "Abc": encrypt_md5(user_age),
@@ -18,14 +18,14 @@ headers = {"Host": "app.vocabgo.com",
            "Accept-Encoding": "gzip, deflate, br"
            }
 
-rqs_session = rqs2_session = rqs3_session = class_task_request=''
+rqs_session = rqs2_session = rqs3_session = class_task_request = ''
 
 
 def set_token(token):
     # update global value
     global Token
     Token = token
-    global rqs_session, rqs2_session, rqs3_session
+    global rqs_session, rqs2_session, rqs3_session, class_task_request
     rqs_session = requests.session()
     rqs_session.headers = headers
     rqs_session.headers.update({'Usertoken': Token})
@@ -40,5 +40,4 @@ def set_token(token):
     rqs3_session.headers.update({"Origin": "https://app.vocabgo.com", 'Usertoken': Token,
                                  "Content-Type": "application/json", "Content-Length": "460"})
     class_task_request = requests.session()
-    class_task_request.headers = rqs3_session.headers
-
+    class_task_request.headers = headers
