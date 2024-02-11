@@ -11,6 +11,7 @@
 - [ ] 提高正确率 
 
 **2024-02-11**
++ 仅供简单使用,明天完善功能
 + 完成简单的班级任务
 + 后面重构一下(班级任务和自学任务)  
 
@@ -97,3 +98,5 @@ pip install -r requirements.txt
 ![result](./img/result.png)
   
 ![result](./img/result2.png)
+班级测试
+![class_task](./img/class_task.png)
