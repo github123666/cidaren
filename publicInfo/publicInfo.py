@@ -7,7 +7,13 @@ class PublicInfo:
     def __init__(self, path):
         self.path = path
         with open(os.path.join(self.path, "config.json"), 'r', encoding='utf-8') as f:
-            self._token, self.code = json.load(f).values()
+            # user config
+            user_config = json.load(f)
+            self._token = user_config['token']
+            self.code = user_config['code']
+            self.is_class_task = user_config['class_task']
+            self.is_myself_task = user_config['myself_task']
+        # query_answer
         self._topic_code = ''
         self.word_query_result = ''
         self.word_means = ''

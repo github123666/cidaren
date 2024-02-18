@@ -19,7 +19,7 @@ def handle_response(response):
     if code == 1:
         api.logger.info(f"请求成功{response.content}")
     # complete exam
-    elif code == 20001 and rsp_json['data']:
+    elif code == 20001 and rsp_json['data'] or code == 20004:
         pass
     else:
         api.logger.info(f"请求有问题{response.text}退出程序")
@@ -193,7 +193,7 @@ def next_class_exam(public_info):
     rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(data))
     # check request is success
     handle_response(rsp)
-    if rsp.json()['msg'] == '需要选词！':
+    if rsp.json()['msg'] == '任务已完成！':
         public_info.exam = 'complete'
     # decrypt response
     else:

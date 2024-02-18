@@ -12,6 +12,8 @@ def filter_expire_task(public_info):
     unexpired_tasks = []
     for tasks in public_info.class_task:
         for task in tasks['records']:
+            # over_status 2 no expire over_status expire
             if task['over_status'] == 2:
-                unexpired_tasks.append(task)
+                if task['progress'] < 100:
+                    unexpired_tasks.append(task)
     public_info.class_task = unexpired_tasks

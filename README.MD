@@ -10,6 +10,11 @@
 - [ ] 转原型的第三方库不是很好用
 - [ ] 提高正确率 
 
+**2024-02-18**
++ 将班级任务和自学任务分开
++ 先将大致功能完成后在解决bug
++ 晚上在调试
+
 **2024-02-11**
 + 仅供简单使用,明天完善功能
 + 完成简单的班级任务
@@ -87,6 +92,14 @@ https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&red
 方法二:  
 自己抓包,抓token(如果在手机端抓的token,可以在手机端查看,pc端同理)
 配置config.json里面token
+```angular2html
+{
+  "token": "0a111712cacd923cdc39cdf93accb20cc",
+  "code": "011RXfGa12geGG0C1QFa1cUUnq3RXfGr", // 不会抓包的配置这个
+  "class_task": true, // 是否完成班级任务
+  "myself_task": true // 是否完成自学任务
+}
+```
 
 
 配置环境
