@@ -3,6 +3,7 @@ import os
 
 
 class PublicInfo:
+    task_type: str
 
     def __init__(self, path):
         self.path = path
@@ -63,3 +64,4 @@ class PublicInfo:
             f.seek(0)
             data['token'] = token
             f.write(json.dumps(data))
+

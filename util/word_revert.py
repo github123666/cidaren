@@ -10,4 +10,4 @@ def word_revert(word: str) -> str:
 
 
 if __name__ == '__main__':
-    print(word_revert('undergone'))
+    print(word_revert('packed'))

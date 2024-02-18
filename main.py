@@ -11,10 +11,120 @@ from util.basic_utll import filler_not_complete_unit, filter_expire_task
 from util.handle_word_list import handle_word_result
 
 
-def run():
-    # init public info
-    main.logger.info("初始化公共组件")
-    public_info = PublicInfo(path)
+def complete_test(task_info: dict):
+    """
+
+    :param task_info: 测试任务信息
+    :return: None
+    """
+
+    task_name = task_info['task_name']
+    public_info.course_id = task_info['course_id']
+    main.logger.info(f'完成{task_name}')
+    # get unit id
+    main.logger.info('用course_id匹配单元list_id')
+    # get all the units of the book
+    main.logger.info('获取该书的所有单元')
+    get_all_unit(public_info)
+    for unit in public_info.all_unit['task_list']:
+        if unit['task_name'] == task_name:
+            public_info.now_unit = unit['list_id']
+    unit_progress = task_info['progress']
+    # myself exam task_id
+    if task_info['task_type'] == 1:
+        complete_practice(public_info.now_unit, unit_progress, task_info['task_id'])
+    else:
+        get_unit_id(public_info)  # return now unit all word
+        # extract return word
+        handle_word_result(public_info)
+        public_info.task_id = task_info['task_id']
+        # get first exam
+        public_info.release_id = task_info['release_id']
+        get_class_exam(public_info)
+        public_info.topic_code = public_info.exam['topic_code']
+        main.logger.info("开始答题")
+        option = 0
+        while True:
+            main.logger.info("获取题目类型")
+            if public_info.exam == 'complete':
+                # unit complete skip next unit
+                break
+            mode = public_info.exam['topic_mode']
+            main.logger.info(f'题目类型{mode}')
+            if mode == 17:
+                option = mean_to_word(public_info)
+            elif mode == 51:
+                option = complete_sentence(public_info)
+            else:
+                print('退出')
+                exit(-1)
+            submit_exam(public_info, option)
+            # sleep 1~3s
+            time.sleep(random.randint(1, 3))
+
+
+def complete_practice(unit: str, progress: int, task_id=None):
+    """
+    :param task_id: 任务id
+    :param unit:  单元名称
+    :param progress: 单元进度
+    :return: None
+    """
+    main.logger.info(f"获取该{unit}单元的task_id")
+    public_info.now_unit = unit
+    get_unit_id(public_info)  # return self unit all word
+    if task_id:
+        public_info.task_id = task_id
+    main.logger.info("处理words")
+    handle_word_result(public_info)
+    main.logger.info("选择该单元所有单词")
+    # {"CET4_pre:CET4_pre_10":["survey","apply","defasdfa"]} word
+    # not complete unit choice all word
+    if progress == 0:
+        select_all_word(f"{public_info.course_id}:{unit}", public_info.word_list, public_info.task_id)
+    # get first exam
+    if task_id:
+        get_class_exam(public_info)
+    else:
+        get_exam(public_info)
+    public_info.topic_code = public_info.exam['topic_code']
+    main.logger.info("开始答题")
+    # topic_mode
+    while True:
+        main.logger.info("获取题目类型")
+        if public_info.exam == 'complete':
+            # unit complete skip next unit
+            break
+        mode = public_info.exam['topic_mode']
+        # handle answer (choice)
+        if mode == 0:
+            # skip read cord
+            jump_read(public_info)
+            continue
+        elif mode == 32:
+            option = select_word(public_info)
+        elif mode == 11 or mode == 22:
+            option = word_form_mean(public_info)
+        elif mode == 31:
+            together_word(public_info)
+            continue
+        elif mode == 51:
+            option = complete_sentence(public_info)
+        else:
+            option = 0
+            main.logger.info(public_info.exam)
+            main.logger.info("其他模式,已退出")
+            exit(-1)
+        # sleep 1~3s
+        time.sleep(random.randint(1, 3))
+        # submit answer
+        if task_id:
+            submit_exam(public_info, option)
+        else:
+            submit(public_info, option)
+
+
+def init_token():
     # get token
     token = public_info.token
     if token:
@@ -26,8 +136,14 @@ def run():
         get_token(public_info)
     # init requests token
     requests.set_token(public_info.token)
+
+
+def run():
+    init_token()
     main.logger.info('开始答题')
+    # class task
     if public_info.is_class_task:
+        PublicInfo.task_type = 'ClassTask'
         main.logger.info('开始完成班级任务')
         # get class task
         now_page = 1
@@ -40,43 +156,10 @@ def run():
         filter_expire_task(public_info)
         # start complete class task
         for task_info in public_info.class_task:
-            now_unit = task_info['task_name']
-            main.logger.info(f'完成{now_unit}')
-            # get unit id
-            public_info.now_unit = now_unit
-            public_info.course_id = task_info['course_id']
-            # get all the units of the book
-            main.logger.info('获取该书的所有单元')
-            get_all_unit(public_info)
-            for unit in public_info.all_unit['task_list']:
-                if unit['task_name'] == now_unit:
-                    public_info.now_unit = unit['list_id']
-            get_unit_id(public_info)  # return now unit all word
-            # extract return word
-            handle_word_result(public_info)
-            public_info.task_id = task_info['task_id']
-            # get first exam
-            public_info.release_id = task_info['release_id']
-            get_class_exam(public_info)
-            public_info.topic_code = public_info.exam['topic_code']
-            main.logger.info("开始答题")
-            option = 0
-            while True:
-                main.logger.info("获取题目类型")
-                if public_info.exam == 'complete':
-                    # unit complete skip next unit
-                    break
-                mode = public_info.exam['topic_mode']
-                main.logger.info(f'题目类型{mode}')
-                if mode == 17:
-                    option = mean_to_word(public_info)
-                elif mode == 51:
-                    option = complete_sentence(public_info)
-                else:
-                    print('退出')
-                    exit(-1)
-                submit_exam(public_info, option)
+            complete_test(task_info)
+    # myself task
     if public_info.is_myself_task:
+        PublicInfo.task_type = 'StudyTask'
         main.logger.info('开始完成自选任务')
         # get course
         get_select_course(public_info)
@@ -86,52 +169,8 @@ def run():
         # get not complete
         filler_not_complete_unit(public_info)
         main.logger.info(f"没有完成的单元{public_info.not_complete_unit}")
-        for unit, value in public_info.not_complete_unit.items():
-            main.logger.info(f"获取该{unit}单元的task_id")
-            public_info.now_unit = unit
-            get_unit_id(public_info)  # return self unit all word
-            main.logger.info("处理words")
-            handle_word_result(public_info)
-            main.logger.info("选择该单元所有单词")
-            # {"CET4_pre:CET4_pre_10":["survey","apply","defasdfa"]} word
-            # not complete unit choice all word
-            if value == 0:
-                select_all_word(f"{public_info.course_id}:{unit}", public_info.word_list, public_info.task_id)
-            # get first exam
-            get_exam(public_info)
-            public_info.topic_code = public_info.exam['topic_code']
-            main.logger.info("开始答题")
-            i = 0
-            # topic_mode
-            while True:
-                main.logger.info("获取题目类型")
-                if public_info.exam == 'complete':
-                    # unit complete skip next unit
-                    break
-                mode = public_info.exam['topic_mode']
-                # handle answer (choice)
-                if mode == 0:
-                    # skip read cord
-                    jump_read(public_info)
-                    continue
-                elif mode == 32:
-                    option = select_word(public_info)
-                elif mode == 11 or mode == 22:
-                    option = word_form_mean(public_info)
-                elif mode == 31:
-                    together_word(public_info)
-                    continue
-                elif mode == 51:
-                    option = complete_sentence(public_info)
-                else:
-                    option = 0
-                    main.logger.info(public_info.exam)
-                    main.logger.info("其他模式,已退出")
-                    exit(-1)
-                time.sleep(1)
-                # submit answer
-                submit(public_info, option)
-                i += 1
+        for unit, progress in public_info.not_complete_unit.items():
+            complete_practice(unit, progress)
     main.logger.info('运行完成')
 
 
@@ -141,4 +180,8 @@ if __name__ == '__main__':
     main.logger.info('开始登录')
     # path
     path = os.path.dirname(__file__)
+    # init public info
+    main.logger.info("初始化公共组件")
+    public_info = PublicInfo(path)
+    # run
     run()

@@ -14,6 +14,7 @@
 + 将班级任务和自学任务分开
 + 先将大致功能完成后在解决bug
 + 晚上在调试
++ 过班级任务的学习任务
 
 **2024-02-11**
 + 仅供简单使用,明天完善功能
@@ -84,16 +85,17 @@
 **Tip1**:有些单词(什么双写加ing的.....)会提交不了,需要手动提交.**推荐刷分使用**   
 **Tip2**:开梯子运行(有个题型走的google翻译)    
 方法一：获取微信code,拼手速,点下面授权cdr的链接标签页转一圈半就关掉,打开其他网页百度什么的,查看浏览记录(**没有跳转到 cdr home 页面的记录则为成功**) 
-
-配置config.json      
-code只能使用一次,且在运行时不能进入词达人(会挤掉)
-![img.png](img/img.png)
 ```angular2html
 https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&redirect_uri=https%3A%2F%2Fapp.vocabgo.com%2Fstudent%2F%3Fauthorize%3D2&response_type=code&scope=snsapi_userinfo&state=STATE
 ```
+配置config.json      
+code只能使用一次,且在运行时不能进入词达人(会挤掉)
+![img.png](img/img.png)
+
 方法二:  
 自己抓包,抓token(如果在手机端抓的token,可以在手机端查看,pc端同理)
-配置config.json里面token
+配置config.json里面token  
+**配置config.json**
 ```angular2html
 {
   "token": "0a111712cacd923cdc39cdf93accb20cc",
@@ -108,7 +110,7 @@ https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&red
 ```angular2html
 pip install -r requirements.txt
 ```
-运行main.py (大概每五秒提交一次答案)  
+运行main.py (随机1~3秒提交一次答案)  
   
 ![result](./img/result.png)
   

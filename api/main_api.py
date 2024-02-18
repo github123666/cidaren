@@ -4,6 +4,7 @@ import api.request_header as requests
 from decryptencrypt.debase64 import debase64
 from decryptencrypt.encrypt_md5 import encrypt_md5
 from log.log import Log
+from publicInfo.publicInfo import PublicInfo
 from util.create_timestamp import create_timestamp
 
 # create logger
@@ -27,10 +28,11 @@ def handle_response(response):
 
 
 # select all word exam
-def select_all_word(key, word_list, task_id: int) -> None:
+def select_all_word(key, word_list, task_id: int,) -> None:
     api.logger.info("勾选全部单词并提交")
     timestamp = create_timestamp()
-    url = 'StudyTask/SubmitChoseWord'
+    url = f'{PublicInfo.task_type}/SubmitChoseWord'
+    # 取消键值对的空格(紧密排版)
     word_map = json.dumps({key: word_list}, separators=(',', ':'))
     source_str = f'chose_err_item=2&task_id={task_id}&timestamp={timestamp}&version=2.6.1.231204&word_map={word_map}ajfajfamsnfaflfasakljdlalkflak'
     sign = encrypt_md5(source_str)
@@ -92,7 +94,7 @@ def get_class_exam(public_info):
 # start
 def get_exam(public_info):
     api.logger.info("获取第一个题topic_code")
-    url = f'StudyTask/StartAnswer?task_id={public_info.task_id}&task_type=3&course_id={public_info.course_id}&opt_img_w=' \
+    url = f'{PublicInfo.task_type}/StartAnswer?task_id={public_info.task_id}&task_type=3&course_id={public_info.course_id}&opt_img_w=' \
           f'1704&opt_font_size=94&opt_font_c=%23000000&it_img_w=2002&it_font_size=106&timestamp={create_timestamp()}&version=2.6.1.231204&app_type=1'
     rsp = requests.rqs_session.get(basic_url + url)
     # check response is success
@@ -105,7 +107,7 @@ def get_exam(public_info):
 # next exam
 def next_exam(public_info):
     api.logger.info("获取下一题")
-    url = 'StudyTask/SubmitAnswerAndSave'
+    url = f'{PublicInfo.task_type}/SubmitAnswerAndSave'
     timestamp = create_timestamp()
     topic_code = public_info.topic_code
     # sign 是乱写的后台好像不会验证
@@ -144,12 +146,11 @@ def submit_result(public_info, option):
     topic_code = public_info.topic_code
     sign = encrypt_md5(
         f"answer={option}&timestamp={timestamp}&topic_code={topic_code}&version=2.6.1.231204ajfajfamsnfaflfasakljdlalkflak")
-    url = "StudyTask/VerifyAnswer"
+    url = f"{PublicInfo.task_type}/VerifyAnswer"
     data = {"answer": option,
             "topic_code": topic_code,
             "timestamp": timestamp, "version": "2.6.1.231204", "sign": sign,
             "app_type": 1}
-    print(data)
     rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(data))
     # check request is success
     handle_response(rsp)
@@ -193,7 +194,7 @@ def next_class_exam(public_info):
     rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(data))
     # check request is success
     handle_response(rsp)
-    if rsp.json()['msg'] == '任务已完成！':
+    if rsp.json()['msg'] == '任务已完成！' or rsp.json()['msg'] == '需要选词！':
         public_info.exam = 'complete'
     # decrypt response
     else:
