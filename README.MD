@@ -107,7 +107,7 @@ code只能使用一次,且在运行时不能进入词达人(会挤掉),后面加
 
 方法三:
 B站上cdr付费使用的软件,可以获取token(不如自己抓包)。风险自己承担  
-配置config.json里面token  
+
 **配置config.json**
 ```angular2html
 {
