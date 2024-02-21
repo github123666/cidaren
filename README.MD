@@ -129,6 +129,7 @@ pip install -r requirements.txt
   
 ![result](./img/result2.png)
 班级测试
-![class_task](./img/class_task.png)
+![class_task](./img/class_task.png)  
+
 第一个只有70分的原因包含了全部题型
 ![class_task2](./img/class_task2.png)
