@@ -2,13 +2,18 @@
 `词达人过班级任务,自学任务`
 - [x] 自动过自学任务
 - [x] 过班级任务
-- [ ] 添加可视化
-- [ ] 使用更简洁的方法去实现单词转换(环境太乱了)
 - [ ] 修复已知bug
-- [ ] 扩展脚本
 - [ ] 汉转英没有好的接口(目前只能利用google,正确率不高的原因)
 - [ ] 转原型的第三方库不是很好用
 - [ ] 提高正确率 
+
+**2024-02-22**
++ 现在存在问题:
+  - 补全句子题型
+  - token小白不好获取
+
+**2024-02-20**
++ 完成班级测试大部分题型
 
 **2024-02-18**
 + 将班级任务和自学任务分开
@@ -24,7 +29,7 @@
 
 **2024-02-02**
 + 模拟器把wx号封了(就刷了一个xpose框架) 
-+ 交流加QQ：3288892500 
++ 交流加(算了) 
 
 **2024-02-01**
 + 添加加班级任务
@@ -84,12 +89,13 @@
 > 目前默认完成所有班级任务,或自学任务,目前正确率应该有80%(慢慢提升中)。
 
 **Tip1**:有些单词(什么双写加ing的.....)会提交不了,需要手动提交.  
-**Tip2**:建议开梯子运行，有个题型走的google翻译(汉译英,准确录不高)  
+**Tip2**:建议开梯子运行,有个题型走的google翻译(汉译英,准确录不高)  
 **Tip3**:对会抓token的友好，没有挤掉的风险
+**Tip4**:补全句子题型还没开始写
 
 获取token:   
 
-方法一：获取微信code,拼手速,点下面授权cdr的链接标签页转一圈半就关掉,打开其他网页百度什么的,查看浏览记录(**没有跳转到 cdr home 页面的记录则为成功**) 
+方法一：获取微信code,拼手速,点下面授权cdr的链接标签页转一圈半就关掉,打开其他网页百度什么的,查看浏览记录(**没有跳转到 cdr home 页面的记录则为成功，此时code还没使用,可以获取token**) 
 ```angular2html
 https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&redirect_uri=https%3A%2F%2Fapp.vocabgo.com%2Fstudent%2F%3Fauthorize%3D2&response_type=code&scope=snsapi_userinfo&state=STATE
 ```
@@ -97,7 +103,10 @@ code只能使用一次,且在运行时不能进入词达人(会挤掉),后面加
 ![img.png](img/img.png)
 
 方法二:  
-自己抓包,抓token(如果在手机端抓的token,可以在手机端查看,pc端同理)
+自己抓包,抓token(如果在手机端抓的token,可以在手机端查看,pc端同理)很简单
+
+方法三:
+B站上cdr付费使用的软件,可以获取token(不如自己抓包)。风险自己承担  
 配置config.json里面token  
 **配置config.json**
 ```angular2html
@@ -121,3 +130,5 @@ pip install -r requirements.txt
 ![result](./img/result2.png)
 班级测试
 ![class_task](./img/class_task.png)
+第一个只有70分的原因包含了全部题型
+![class_task2](./img/class_task2.png)

@@ -52,9 +52,9 @@ def select_word(public_info) -> int or str:
 def word_form_mean(public_info: PublicInfo) -> int:
     query_answer.logger.info("英译汉")
     # is listen
-    exam = public_info.exam['stem']['content']
+    exam = public_info.exam['stem']['content'].replace(' ', "")
     word = re.findall("{(.*)}", exam)
-    # is require regular
+    # is require regular type 1 is ... xxx {} type2 test
     word = word[0] if word else exam
     query_answer.logger.info(f"查询{word}单词意思")
     # word is exist word_list
@@ -75,6 +75,7 @@ def word_form_mean(public_info: PublicInfo) -> int:
 def mean_to_word(public_info):
     # mode 17
     word_mean = public_info.exam['stem']['content']
+    query_answer.logger.info(f'查询{word_mean}意思')
     # match answer
     return select_match_word(public_info, word_mean)
 

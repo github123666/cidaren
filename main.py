@@ -13,7 +13,7 @@ from util.handle_word_list import handle_word_result
 
 def complete_test(task_info: dict):
     """
-
+    完成班级任务的测试
     :param task_info: 测试任务信息
     :return: None
     """
@@ -32,6 +32,7 @@ def complete_test(task_info: dict):
     unit_progress = task_info['progress']
     # myself exam task_id
     if task_info['task_type'] == 1:
+        main.logger.info('完成班级任务的自学任务')
         complete_practice(public_info.now_unit, unit_progress, task_info['task_id'])
     else:
         get_unit_id(public_info)  # return now unit all word
@@ -51,20 +52,32 @@ def complete_test(task_info: dict):
                 break
             mode = public_info.exam['topic_mode']
             main.logger.info(f'题目类型{mode}')
-            if mode == 17:
+            if mode == 17 or mode == 18:
                 option = mean_to_word(public_info)
-            elif mode == 51:
+            elif mode == 15 or mode == 16 or mode == 21 or mode == 22:
+                option = word_form_mean(public_info)
+            elif mode == 11 or mode == 22:
+                option = word_form_mean(public_info)
+            elif mode == 32:
+                option = select_word(public_info)
+            elif mode == 31:
+                together_word(public_info)
+                continue
+            # mode == 41 "content":"The  price  of  {}  furniture  is  very  high,  especially  those  pieces  that  were  made  in  Ming  and  Qing  dynasties.","remark":"古董家具的价格很高，尤其是明清时期的家具。"
+            # mode == 43  "content":"Reading  is  of  {}  importance  in  language  learning.","remark":"阅读在语言学习中至关重要。" 选时态
+            elif mode == 51 or mode == 52 or mode == 53 or mode == 54:
                 option = complete_sentence(public_info)
             else:
                 print('退出')
                 exit(-1)
             submit_exam(public_info, option)
-            # sleep 1~3s
-            time.sleep(random.randint(1, 3))
+            # sleep 1~5s
+            time.sleep(random.randint(1, 5))
 
 
 def complete_practice(unit: str, progress: int, task_id=None):
     """
+    班级任务和自学共用
     :param task_id: 任务id
     :param unit:  单元名称
     :param progress: 单元进度
@@ -93,6 +106,7 @@ def complete_practice(unit: str, progress: int, task_id=None):
     while True:
         main.logger.info("获取题目类型")
         if public_info.exam == 'complete':
+            main.logger.info('该单元已完成')
             # unit complete skip next unit
             break
         mode = public_info.exam['topic_mode']
@@ -108,22 +122,25 @@ def complete_practice(unit: str, progress: int, task_id=None):
         elif mode == 31:
             together_word(public_info)
             continue
-        elif mode == 51:
+        elif mode == 51 or mode == 52:
             option = complete_sentence(public_info)
+
         else:
             option = 0
             main.logger.info(public_info.exam)
-            main.logger.info("其他模式,已退出")
+            main.logger.info("其他题型,已退出")
             exit(-1)
-        # sleep 1~3s
-        time.sleep(random.randint(1, 3))
+        # sleep 1~5s
+        time.sleep(random.randint(1, 5))
         # submit answer
         if task_id:
+            # class task
             submit_exam(public_info, option)
         else:
             submit(public_info, option)
 
 
+# check token is expire
 def init_token():
     # get token
     token = public_info.token

@@ -173,7 +173,6 @@ def submit_class_exam(public_info, option):
     rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(data))
     # check request is success
     handle_response(rsp)
-    api.logger.info("提取下一题的请求参数")
     # next exam topic_code
     public_info.topic_code = debase64(rsp.json())['topic_code']
 
