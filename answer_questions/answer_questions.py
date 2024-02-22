@@ -2,7 +2,7 @@ import random
 import re
 import time
 
-from api.main_api import query_word, submit_result, next_exam, submit_class_exam, next_class_exam
+from api.main_api import query_word, submit_result, next_exam
 from api.translate import zh_en
 from log.log import Log
 from publicInfo.publicInfo import PublicInfo
@@ -13,21 +13,25 @@ query_answer = Log('query_answer')
 
 
 # submit
-def submit(public_info: PublicInfo, option: int):
+def submit(public_info: PublicInfo, option: int or str or dict):
+    """
+    submit answer
+    :param public_info:
+    :param option: 选项索引或单词
+    :return: None
+    """
     public_info.topic_code = public_info.exam['topic_code']
     # submit result
-    submit_result(public_info, option)
-    time.sleep(3)
+    if type(option) == dict:
+        # resolve mode == 31
+        for answer_index in option.values():
+            submit_result(public_info, answer_index)
+    else:
+        submit_result(public_info, option)
+    #
+    time.sleep(random.randint(1, 2))
     # get next exam
     next_exam(public_info)
-
-
-# submit exam
-def submit_exam(public_info, option: int or str):
-    public_info.topic_code = public_info.exam['topic_code']
-    submit_class_exam(public_info, option)
-    # get next exam
-    next_class_exam(public_info)
 
 
 # skip read word
@@ -40,11 +44,11 @@ def jump_read(public_info):
 
 # mean form word
 def select_word(public_info) -> int or str:
-    query_answer.logger.info("汉译英")
     word_mean = public_info.exam['stem']['remark'].replace('……', '')
-    query_answer.logger.info(word_mean)
+    query_answer.logger.info("汉译英:" + word_mean)
     # option word
     zh_en(public_info, word_mean)
+    query_answer.logger.info(f'汉译英结果: {public_info.zh_en}')
     return ",".join(public_info.zh_en.split())
 
 
@@ -81,26 +85,20 @@ def mean_to_word(public_info):
 
 
 # select together word
-def together_word(public_info):
+def together_word(public_info) -> dict:
     query_answer.logger.info("单词搭配")
     # exam options
     options = filler_option(public_info)
     # answer
-    result_word = [word['relation'] for word in public_info.exam['stem']['remark']]
+    result_word = {word['relation']: options.index(word['relation']) for word in public_info.exam['stem']['remark']}
     query_answer.logger.info(f"选项{options}")
     query_answer.logger.info(f"答案{result_word}")
-    for word in result_word[:2]:
-        query_answer.logger.info(f"提交单词:{word}")
-        option = options.index(word)
-        # submit result
-        submit_result(public_info, option)
-    next_exam(public_info)
-    public_info.topic_code = public_info.exam['topic_code']
+    return result_word
 
 
 # full word
 def complete_sentence(public_info):
-    query_answer.logger.info("完成单词")
+    query_answer.logger.info("补全单词")
     word_len = public_info.exam['w_lens'][0]
     # submit not  case sensitive
     word_start_with = public_info.exam['w_tip'].lower()
@@ -111,3 +109,26 @@ def complete_sentence(public_info):
                 return word
             elif len(word) + 1 == word_len:
                 return word + 's'
+
+
+def answer(public_info, mode):
+    if mode == 11:
+        option = word_form_mean(public_info)
+    elif mode == 15 or mode == 16 or mode == 21 or mode == 22:
+        option = word_form_mean(public_info)
+    elif mode == 17 or mode == 18:
+        option = mean_to_word(public_info)
+    elif mode == 31:
+        option = together_word(public_info)
+    elif mode == 32:
+        option = select_word(public_info)
+    # mode == 41 "content":"The  price  of  {}  furniture  is  very  high,  especially  those  pieces  that  were  made  in  Ming  and  Qing  dynasties.","remark":"古董家具的价格很高，尤其是明清时期的家具。"
+    # mode == 43  "content":"Reading  is  of  {}  importance  in  language  learning.","remark":"阅读在语言学习中至关重要。" 选时态
+    elif mode == 51 or mode == 52 or mode == 53 or mode == 54:
+        option = complete_sentence(public_info)
+    else:
+        option = 0
+        query_answer.logger.info(public_info.exam)
+        query_answer.logger.info("其他题型,程序退出")
+        exit(-1)
+    return option

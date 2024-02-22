@@ -38,6 +38,9 @@ def select_mean(public_info) -> int:
             if sorted(option.replace(" ", '')) == sorted(mean.replace(" ", '')) or mean in option:
                 select_module.logger.info(f"匹配选项{option}")
                 return index
+    # failed match 乱选一个0~3
+    return 2
+
 
 
 # extract query word means

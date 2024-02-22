@@ -23,12 +23,12 @@ def handle_response(response):
     elif code == 20001 and rsp_json['data'] or code == 20004:
         pass
     else:
-        api.logger.info(f"请求有问题{response.text}退出程序")
+        api.logger.info(f"请求有问题{response.text}退出程序", stack_info=True)
         exit(-1)
 
 
-# select all word exam
-def select_all_word(key, word_list, task_id: int,) -> None:
+# select all word
+def select_all_word(key, word_list, task_id: int, ) -> None:
     api.logger.info("勾选全部单词并提交")
     timestamp = create_timestamp()
     url = f'{PublicInfo.task_type}/SubmitChoseWord'
@@ -76,27 +76,20 @@ def get_class_task(public_info, page_count: int):
     public_info.task_total_count = rsp_dict['data']['total']
 
 
-def get_class_exam(public_info):
-    api.logger.info("获取班级任务第一题")
-    url = 'ClassTask/StartAnswer'
-    params = {'task_id': public_info.task_id, 'task_type': '2', 'release_id': public_info.release_id,
+# # start
+
+def get_exam(public_info):
+    api.logger.info("获取第一题")
+    url = f'{PublicInfo.task_type}/StartAnswer'
+    params = {'task_id': public_info.task_id, 'task_type': PublicInfo.task_type_int,
               'opt_img_w': '684',
               'opt_font_size': '37', 'opt_font_c': '%23000000', 'it_img_w': '804', 'it_font_size': '42',
               'timestamp': create_timestamp(), 'version': '2.6.1.240122', 'app_type': '1'}
+    if PublicInfo.task_type_int == 2:
+        params.update({'release_id': public_info.release_id})
+    else:
+        params.update({'course_id': public_info.course_id})
     rsp = requests.class_task_request.get(url=basic_url + url, params=params)
-    # check response is success
-    handle_response(rsp)
-    #  decrypt response
-    public_info.exam = debase64(rsp.json())
-    api.logger.info("写入成功")
-
-
-# start
-def get_exam(public_info):
-    api.logger.info("获取第一个题topic_code")
-    url = f'{PublicInfo.task_type}/StartAnswer?task_id={public_info.task_id}&task_type=3&course_id={public_info.course_id}&opt_img_w=' \
-          f'1704&opt_font_size=94&opt_font_c=%23000000&it_img_w=2002&it_font_size=106&timestamp={create_timestamp()}&version=2.6.1.231204&app_type=1'
-    rsp = requests.rqs_session.get(basic_url + url)
     # check response is success
     handle_response(rsp)
     #  decrypt response
@@ -121,7 +114,7 @@ def next_exam(public_info):
     rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(data))
     # check request is success
     handle_response(rsp)
-    if rsp.json()['msg'] == '需要选词！':
+    if rsp.json()['msg'] == '任务已完成！' or rsp.json()['msg'] == '需要选词！':
         public_info.exam = 'complete'
     # decrypt response
     else:
@@ -157,47 +150,6 @@ def submit_result(public_info, option):
     api.logger.info("提取下一题的请求参数")
     # next exam topic_code
     public_info.topic_code = debase64(rsp.json())['topic_code']
-
-
-def submit_class_exam(public_info, option):
-    api.logger.info("开始提交答案")
-    timestamp = create_timestamp()
-    topic_code = public_info.topic_code
-    sign = encrypt_md5(
-        f"answer={option}&timestamp={timestamp}&topic_code={topic_code}&version=2.6.1.231204ajfajfamsnfaflfasakljdlalkflak")
-    url = "ClassTask/VerifyAnswer"
-    data = {"answer": option,
-            "topic_code": topic_code,
-            "timestamp": timestamp, "version": "2.6.1.231204", "sign": sign,
-            "app_type": 1}
-    rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(data))
-    # check request is success
-    handle_response(rsp)
-    # next exam topic_code
-    public_info.topic_code = debase64(rsp.json())['topic_code']
-
-
-def next_class_exam(public_info):
-    api.logger.info("获取下一题")
-    url = 'ClassTask/SubmitAnswerAndSave'
-    timestamp = create_timestamp()
-    topic_code = public_info.topic_code
-    # sign 是乱写的后台好像不会验证
-    sign = f"timestamp={timestamp}&topic_code={topic_code}&version=2.6.1.231204ajfajfamsnfaflfasakljdlalkflak"
-    data = {
-        "time_spent": 3417, "opt_img_w": 1704, "opt_font_size": 94, "opt_font_c": "#000000", "it_img_w": 2002,
-        "it_font_size": 106,
-        "topic_code": topic_code,
-        "timestamp": timestamp, "version": "2.6.1.231204", "sign": sign,
-        "app_type": 1}
-    rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(data))
-    # check request is success
-    handle_response(rsp)
-    if rsp.json()['msg'] == '任务已完成！' or rsp.json()['msg'] == '需要选词！':
-        public_info.exam = 'complete'
-    # decrypt response
-    else:
-        public_info.exam = debase64(rsp.json())
 
 
 if __name__ == '__main__':

@@ -1,7 +1,6 @@
 import requests
 
 from decryptencrypt.encrypt_md5 import encrypt_md5
-
 Token = ''
 user_age = 'Mozilla/5.0 (Linux; Android 7.1.2; LIO-AN00 Build/LIO-AN00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.131 Safari/537.36 MMWEBID/4462 MicroMessenger/8.0.20.2100(0x28001438) Process/toolsmp WeChat/arm32 Weixin Android Tablet NetType/WIFI Language/zh_CN ABI/arm64'
 headers = {"Host": "app.vocabgo.com",
@@ -26,11 +25,13 @@ def set_token(token):
     global Token
     Token = token
     global rqs_session, rqs2_session, rqs3_session, class_task_request
+    requests.DEFAULT_RETRIES = 5
     rqs_session = requests.session()
     rqs_session.headers = headers
     rqs_session.headers.update({'Usertoken': Token})
     # submit request header
     rqs2_session = requests.session()
+    rqs2_session.keep_alive = False
     rqs2_session.headers = headers.copy()
     rqs2_session.headers.update(
         {"Authorization-V": "c4ca4238a0b923820dcc509a6f75849b", 'Usertoken': Token, "Origin": "https://app.vocabgo.com",

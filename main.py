@@ -4,7 +4,7 @@ import api.request_header as requests
 from answer_questions.answer_questions import *
 from api.basic_api import get_all_unit, get_unit_id, get_select_course
 from api.login import verify_token, get_token
-from api.main_api import get_exam, select_all_word, get_class_task, get_class_exam
+from api.main_api import get_exam, select_all_word, get_class_task
 from log.log import Log
 from publicInfo.publicInfo import PublicInfo
 from util.basic_utll import filler_not_complete_unit, filter_expire_task
@@ -41,10 +41,9 @@ def complete_test(task_info: dict):
         public_info.task_id = task_info['task_id']
         # get first exam
         public_info.release_id = task_info['release_id']
-        get_class_exam(public_info)
+        get_exam(public_info)
         public_info.topic_code = public_info.exam['topic_code']
         main.logger.info("开始答题")
-        option = 0
         while True:
             main.logger.info("获取题目类型")
             if public_info.exam == 'complete':
@@ -52,25 +51,8 @@ def complete_test(task_info: dict):
                 break
             mode = public_info.exam['topic_mode']
             main.logger.info(f'题目类型{mode}')
-            if mode == 17 or mode == 18:
-                option = mean_to_word(public_info)
-            elif mode == 15 or mode == 16 or mode == 21 or mode == 22:
-                option = word_form_mean(public_info)
-            elif mode == 11 or mode == 22:
-                option = word_form_mean(public_info)
-            elif mode == 32:
-                option = select_word(public_info)
-            elif mode == 31:
-                together_word(public_info)
-                continue
-            # mode == 41 "content":"The  price  of  {}  furniture  is  very  high,  especially  those  pieces  that  were  made  in  Ming  and  Qing  dynasties.","remark":"古董家具的价格很高，尤其是明清时期的家具。"
-            # mode == 43  "content":"Reading  is  of  {}  importance  in  language  learning.","remark":"阅读在语言学习中至关重要。" 选时态
-            elif mode == 51 or mode == 52 or mode == 53 or mode == 54:
-                option = complete_sentence(public_info)
-            else:
-                print('退出')
-                exit(-1)
-            submit_exam(public_info, option)
+            option = answer(public_info, mode)
+            submit(public_info, option)
             # sleep 1~5s
             time.sleep(random.randint(1, 5))
 
@@ -96,10 +78,7 @@ def complete_practice(unit: str, progress: int, task_id=None):
     if progress == 0:
         select_all_word(f"{public_info.course_id}:{unit}", public_info.word_list, public_info.task_id)
     # get first exam
-    if task_id:
-        get_class_exam(public_info)
-    else:
-        get_exam(public_info)
+    get_exam(public_info)
     public_info.topic_code = public_info.exam['topic_code']
     main.logger.info("开始答题")
     # topic_mode
@@ -115,29 +94,11 @@ def complete_practice(unit: str, progress: int, task_id=None):
             # skip read cord
             jump_read(public_info)
             continue
-        elif mode == 32:
-            option = select_word(public_info)
-        elif mode == 11 or mode == 22:
-            option = word_form_mean(public_info)
-        elif mode == 31:
-            together_word(public_info)
-            continue
-        elif mode == 51 or mode == 52:
-            option = complete_sentence(public_info)
-
-        else:
-            option = 0
-            main.logger.info(public_info.exam)
-            main.logger.info("其他题型,已退出")
-            exit(-1)
+        option = answer(public_info,mode)
         # sleep 1~5s
         time.sleep(random.randint(1, 5))
         # submit answer
-        if task_id:
-            # class task
-            submit_exam(public_info, option)
-        else:
-            submit(public_info, option)
+        submit(public_info, option)
 
 
 # check token is expire
@@ -161,6 +122,7 @@ def run():
     # class task
     if public_info.is_class_task:
         PublicInfo.task_type = 'ClassTask'
+        PublicInfo.task_type_int = 2
         main.logger.info('开始完成班级任务')
         # get class task
         now_page = 1
@@ -177,6 +139,7 @@ def run():
     # myself task
     if public_info.is_myself_task:
         PublicInfo.task_type = 'StudyTask'
+        PublicInfo.task_type_int = 2
         main.logger.info('开始完成自选任务')
         # get course
         get_select_course(public_info)
