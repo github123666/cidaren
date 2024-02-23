@@ -60,7 +60,6 @@ def word_form_mean(public_info: PublicInfo) -> int:
     word = re.findall("{(.*)}", exam)
     # is require regular type 1 is ... xxx {} type2 test
     word = word[0] if word else exam
-    query_answer.logger.info(f"查询{word}单词意思")
     # word is exist word_list
     if word not in public_info.word_list:
         query_answer.logger.info("将word转原型")
@@ -79,7 +78,6 @@ def word_form_mean(public_info: PublicInfo) -> int:
 def mean_to_word(public_info):
     # mode 17
     word_mean = public_info.exam['stem']['content']
-    query_answer.logger.info(f'查询{word_mean}意思')
     # match answer
     return select_match_word(public_info, word_mean)
 
@@ -94,6 +92,38 @@ def together_word(public_info) -> dict:
     query_answer.logger.info(f"选项{options}")
     query_answer.logger.info(f"答案{result_word}")
     return result_word
+
+
+# complete a sentence
+def full_sentence(public_info) -> int or str:
+    query_answer.logger.info("选择最合适的单词完成句子")
+    options = filler_option(public_info)
+    exam_zh = public_info.exam['stem']['remark']
+    for word in options:
+        query_word(public_info, word_revert(word))
+        for means in public_info.word_query_result['means']:
+            for examples in means['usages']:
+                for sentences in examples['examples']:
+                    if sentences["sen_mean_cn"] == exam_zh:
+                        # answer
+                        word = re.findall(r'{(.+?)}', sentences['sen_content'])[0]
+                        # submit 1#0,0#2 or 1 应该分开写提升正确率
+                        for option in public_info.exam['options']:
+                            # match answer
+                            option_word = option['answer_tag']
+                            if type(option_word) == str:
+                                if option['sub_options']:
+                                    for sub_option in option['sub_options']:
+                                        if sub_option['content'] == word:
+                                            return option_word + str(sub_option['answer_tag'])
+                                # no need to  match  tenses
+                                if option['content'] == word:
+                                    return option_word + '0'
+                            else:
+                                if option['content'] == word:
+                                    return option_word
+    query_answer.logger.info("补全句子失败,猜第3个选项")
+    return public_info.exam['options'][2]['answer_tag']
 
 
 # full word
@@ -114,6 +144,9 @@ def complete_sentence(public_info):
 def answer(public_info, mode):
     if mode == 11:
         option = word_form_mean(public_info)
+    elif mode == 13:
+        # guess option 没思路
+        option = 3
     elif mode == 15 or mode == 16 or mode == 21 or mode == 22:
         option = word_form_mean(public_info)
     elif mode == 17 or mode == 18:
@@ -122,7 +155,9 @@ def answer(public_info, mode):
         option = together_word(public_info)
     elif mode == 32:
         option = select_word(public_info)
-    # mode == 41 "content":"The  price  of  {}  furniture  is  very  high,  especially  those  pieces  that  were  made  in  Ming  and  Qing  dynasties.","remark":"古董家具的价格很高，尤其是明清时期的家具。"
+    elif mode == 41 or mode == 42 or mode == 43 or mode == 44:
+        option = full_sentence(public_info)
+        query_answer.logger.info(f'提交选项{option}')
     # mode == 43  "content":"Reading  is  of  {}  importance  in  language  learning.","remark":"阅读在语言学习中至关重要。" 选时态
     elif mode == 51 or mode == 52 or mode == 53 or mode == 54:
         option = complete_sentence(public_info)

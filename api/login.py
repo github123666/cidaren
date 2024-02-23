@@ -36,6 +36,7 @@ def get_token(public_info):
         login.logger.info(f"token获取成功{rsp_data['token']}")
     else:
         login.logger.info("code 已经被使用请重新抓取")
+        exit('程序退出')
 
 
 def verify_token(token) -> bool:

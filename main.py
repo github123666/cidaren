@@ -75,7 +75,7 @@ def complete_practice(unit: str, progress: int, task_id=None):
     main.logger.info("选择该单元所有单词")
     # {"CET4_pre:CET4_pre_10":["survey","apply","defasdfa"]} word
     # not complete unit choice all word
-    if progress == 0:
+    if progress < 2:
         select_all_word(f"{public_info.course_id}:{unit}", public_info.word_list, public_info.task_id)
     # get first exam
     get_exam(public_info)
@@ -94,7 +94,7 @@ def complete_practice(unit: str, progress: int, task_id=None):
             # skip read cord
             jump_read(public_info)
             continue
-        option = answer(public_info,mode)
+        option = answer(public_info, mode)
         # sleep 1~5s
         time.sleep(random.randint(1, 5))
         # submit answer

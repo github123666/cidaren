@@ -22,6 +22,9 @@ def handle_response(response):
     # complete exam
     elif code == 20001 and rsp_json['data'] or code == 20004:
         pass
+    elif code == 0 and rsp_json['msg'] == '加载单词卡片失败，请重新加载':
+        api.logger.error("查找不到单词(第三方库转不了时态),请手动答题")
+        exit('请手动答题,已退出')
     else:
         api.logger.info(f"请求有问题{response.text}退出程序", stack_info=True)
         exit(-1)
@@ -123,6 +126,7 @@ def next_exam(public_info):
 
 # query word
 def query_word(public_info, word):
+    api.logger.info(f"查询单词{word}")
     url = f'Course/StudyWordInfo?course_id={public_info.course_id}&list_id={public_info.now_unit}&word={word}&timestamp={create_timestamp()}&version=2.6.1.231204&app_type=1'
     rsp = requests.rqs_session.get(basic_url + url)
     # check request is success
