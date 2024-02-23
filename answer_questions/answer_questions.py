@@ -3,7 +3,6 @@ import re
 import time
 
 from api.main_api import query_word, submit_result, next_exam
-from api.translate import zh_en
 from log.log import Log
 from publicInfo.publicInfo import PublicInfo
 from util.select_mean import select_mean, handle_query_word_mean, filler_option, select_match_word
@@ -44,12 +43,27 @@ def jump_read(public_info):
 
 # mean form word
 def select_word(public_info) -> int or str:
-    word_mean = public_info.exam['stem']['remark'].replace('……', '')
+    word_mean = public_info.exam['stem']['remark']
     query_answer.logger.info("汉译英:" + word_mean)
     # option word
-    zh_en(public_info, word_mean)
-    query_answer.logger.info(f'汉译英结果: {public_info.zh_en}')
-    return ",".join(public_info.zh_en.split())
+    options = filler_option(public_info)
+    for option in options:
+        if option in public_info.word_list:
+            query_word(public_info, option)
+            for means in public_info.word_query_result['means']:
+                for usage in means['usages']:
+                    phrases_infos = usage['phrases_infos']
+                    if phrases_infos:
+                        for phrases_info in phrases_infos:
+                            if phrases_info['sen_mean_cn'] == word_mean:
+                                delete_strs = ['}', '{', ' ...', ' …']
+                                result = phrases_info['sen_content']
+                                for delete_str in delete_strs:
+                                    result = result.replace(delete_str, '')
+                                return result.replace(' ', ',')
+    # zh_en(public_info, word_mean)
+    # query_answer.logger.info(f'汉译英结果: {public_info.zh_en}')
+    # return ",".join(public_info.zh_en.split())
 
 
 # word form mean
@@ -155,6 +169,7 @@ def answer(public_info, mode):
         option = together_word(public_info)
     elif mode == 32:
         option = select_word(public_info)
+        query_answer.logger.info(f'翻译结果{option}')
     elif mode == 41 or mode == 42 or mode == 43 or mode == 44:
         option = full_sentence(public_info)
         query_answer.logger.info(f'提交选项{option}')
