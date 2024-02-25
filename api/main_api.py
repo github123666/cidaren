@@ -1,11 +1,13 @@
 import json
+import random
+import time
 
 import api.request_header as requests
 from decryptencrypt.debase64 import debase64
 from decryptencrypt.encrypt_md5 import encrypt_md5
 from log.log import Log
 from publicInfo.publicInfo import PublicInfo
-from util.create_timestamp import create_timestamp
+from util.basic_utll import create_timestamp
 
 # create logger
 api = Log('api')
@@ -126,6 +128,7 @@ def next_exam(public_info):
 
 # query word
 def query_word(public_info, word):
+    time.sleep(random.randint(0, 2))
     api.logger.info(f"查询单词{word}")
     url = f'Course/StudyWordInfo?course_id={public_info.course_id}&list_id={public_info.now_unit}&word={word}&timestamp={create_timestamp()}&version=2.6.1.231204&app_type=1'
     rsp = requests.rqs_session.get(basic_url + url)

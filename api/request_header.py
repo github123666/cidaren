@@ -2,7 +2,7 @@ import requests
 
 from decryptencrypt.encrypt_md5 import encrypt_md5
 Token = ''
-user_age = 'Mozilla/5.0 (Linux; Android 7.1.2; LIO-AN00 Build/LIO-AN00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.131 Safari/537.36 MMWEBID/4462 MicroMessenger/8.0.20.2100(0x28001438) Process/toolsmp WeChat/arm32 Weixin Android Tablet NetType/WIFI Language/zh_CN ABI/arm64'
+user_age = 'Mozilla/5.0 (Linux; Android 8.1.2; LIO-AN00 Build/LIO-AN00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.131 Safari/537.36 MMWEBID/4462 MicroMessenger/8.0.20.2100(0x28001438) Process/toolsmp WeChat/arm64 Weixin Android Tablet NetType/WIFI Language/zh_CN ABI/arm64'
 headers = {"Host": "app.vocabgo.com",
            "Accept": "application/json, text/plain, */*",
            "Abc": encrypt_md5(user_age),

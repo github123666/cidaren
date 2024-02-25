@@ -3,7 +3,7 @@ import json
 import api.request_header as requests
 from decryptencrypt.encrypt_md5 import encrypt_md5
 from log.log import Log
-from util.create_timestamp import create_timestamp
+from util.basic_utll import create_timestamp
 
 # basic url
 basic_url = 'https://gateway.vocabgo.com/student/api/'

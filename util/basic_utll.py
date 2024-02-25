@@ -1,3 +1,6 @@
+import time
+
+
 def filler_not_complete_unit(public_info) -> None:
     not_complete_unit = {}
     for task in public_info.all_unit['task_list']:
@@ -18,3 +21,15 @@ def filter_expire_task(public_info):
                 if task['progress'] < 100:
                     unexpired_tasks.append(task)
     public_info.class_task = unexpired_tasks
+
+
+# create timestamp
+def create_timestamp() -> int:
+    return int(time.time() * 1000)
+
+
+def delete_other_char(result: str) -> str:
+    delete_list = ['}', '{', ' ...', ' …']
+    for delete_str in delete_list:
+        result = result.replace(delete_str, '')
+    return result.replace(' ', ',')

@@ -1,6 +1,7 @@
 import api.request_header as requests
 from log.log import Log
-from util.create_timestamp import create_timestamp
+from util.basic_utll import create_timestamp
+
 
 # init log
 basic_api = Log("basic_api")

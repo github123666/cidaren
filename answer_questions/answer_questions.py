@@ -5,7 +5,9 @@ import time
 from api.main_api import query_word, submit_result, next_exam
 from log.log import Log
 from publicInfo.publicInfo import PublicInfo
-from util.select_mean import select_mean, handle_query_word_mean, filler_option, select_match_word
+from util.basic_utll import delete_other_char
+from util.select_mean import select_mean, handle_query_word_mean, filler_option, select_match_word, word_examples, \
+    is_word_exist
 from util.word_revert import word_revert
 
 query_answer = Log('query_answer')
@@ -48,22 +50,25 @@ def select_word(public_info) -> int or str:
     # option word
     options = filler_option(public_info)
     for option in options:
-        if option in public_info.word_list:
-            query_word(public_info, option)
-            for means in public_info.word_query_result['means']:
-                for usage in means['usages']:
-                    phrases_infos = usage['phrases_infos']
-                    if phrases_infos:
-                        for phrases_info in phrases_infos:
-                            if phrases_info['sen_mean_cn'] == word_mean:
-                                delete_strs = ['}', '{', ' ...', ' …']
-                                result = phrases_info['sen_content']
-                                for delete_str in delete_strs:
-                                    result = result.replace(delete_str, '')
-                                return result.replace(' ', ',')
-    # zh_en(public_info, word_mean)
-    # query_answer.logger.info(f'汉译英结果: {public_info.zh_en}')
-    # return ",".join(public_info.zh_en.split())
+        # word is exist word_list
+        if is_word_exist(public_info, option):
+            # two response types
+            if public_info.word_query_result.get('means'):
+                query_result = public_info.word_query_result['means']
+                for means in query_result:
+                    for usage in means['usages']:
+                        phrases_infos = usage['phrases_infos']
+                        if phrases_infos:
+                            for phrases_info in phrases_infos:
+                                # match same mean
+                                if phrases_info['sen_mean_cn'] == word_mean:
+                                    return delete_other_char(phrases_info['sen_content'])
+            else:
+                query_result = public_info.word_query_result['options']
+                for content in query_result:
+                    for usage_info in content['content']['usage_infos']:
+                        if usage_info['sen_mean_cn'] == word_mean:
+                            return delete_other_char(usage_info['sen_content'])
 
 
 # word form mean
@@ -98,7 +103,7 @@ def mean_to_word(public_info):
 
 # select together word
 def together_word(public_info) -> dict:
-    query_answer.logger.info("单词搭配")
+    query_answer.logger.info("意思相似单词")
     # exam options
     options = filler_option(public_info)
     # answer
@@ -112,31 +117,25 @@ def together_word(public_info) -> dict:
 def full_sentence(public_info) -> int or str:
     query_answer.logger.info("选择最合适的单词完成句子")
     options = filler_option(public_info)
-    exam_zh = public_info.exam['stem']['remark']
-    for word in options:
-        query_word(public_info, word_revert(word))
-        for means in public_info.word_query_result['means']:
-            for examples in means['usages']:
-                for sentences in examples['examples']:
-                    if sentences["sen_mean_cn"] == exam_zh:
-                        # answer
-                        word = re.findall(r'{(.+?)}', sentences['sen_content'])[0]
-                        # submit 1#0,0#2 or 1 应该分开写提升正确率
-                        for option in public_info.exam['options']:
-                            # match answer
-                            option_word = option['answer_tag']
-                            if type(option_word) == str:
-                                if option['sub_options']:
-                                    for sub_option in option['sub_options']:
-                                        if sub_option['content'] == word:
-                                            return option_word + str(sub_option['answer_tag'])
-                                # no need to  match  tenses
-                                if option['content'] == word:
-                                    return option_word + '0'
-                            else:
-                                if option['content'] == word:
-                                    return option_word
+    # word in examples sentence
+    word = word_examples(public_info, options)
+    # extract answer tag
+    for option in public_info.exam['options']:
+        # match answer
+        option_word = option['answer_tag']
+        if type(option_word) == str:
+            if option['sub_options']:
+                for sub_option in option['sub_options']:
+                    if sub_option['content'] == word:
+                        return option_word + str(sub_option['answer_tag'])
+            # no need to  match  tenses
+            if option['content'] == word:
+                return option_word + '0'
+        else:
+            if option['content'] == word:
+                return option_word
     query_answer.logger.info("补全句子失败,猜第3个选项")
+    # submit 1#0,0#2 or 1 应该分开写提升正确率
     return public_info.exam['options'][2]['answer_tag']
 
 
@@ -146,6 +145,7 @@ def complete_sentence(public_info):
     word_len = public_info.exam['w_lens'][0]
     # submit not  case sensitive
     word_start_with = public_info.exam['w_tip'].lower()
+    # iterate over all word in the unit
     for word in public_info.word_list:
         if word.startswith(word_start_with):
             query_answer.logger.info(word)
@@ -153,6 +153,12 @@ def complete_sentence(public_info):
                 return word
             elif len(word) + 1 == word_len:
                 return word + 's'
+            else:
+                result = word_examples(public_info, [word])
+                if result:
+                    return result
+    query_answer.logger.info(f"找不到答案,提交{word}")
+    return word
 
 
 def answer(public_info, mode):
@@ -176,6 +182,7 @@ def answer(public_info, mode):
     # mode == 43  "content":"Reading  is  of  {}  importance  in  language  learning.","remark":"阅读在语言学习中至关重要。" 选时态
     elif mode == 51 or mode == 52 or mode == 53 or mode == 54:
         option = complete_sentence(public_info)
+        query_answer.logger.info(f'补全单词结果{option}')
     else:
         option = 0
         query_answer.logger.info(public_info.exam)
