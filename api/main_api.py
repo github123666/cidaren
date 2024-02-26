@@ -20,7 +20,8 @@ def handle_response(response):
     rsp_json = response.json()
     code = rsp_json['code']
     if code == 1:
-        api.logger.info(f"请求成功{response.content}")
+        pass
+        # api.logger.info(f"请求成功{response.content}")
     # complete exam
     elif code == 20001 and rsp_json['data'] or code == 20004:
         pass
@@ -30,6 +31,15 @@ def handle_response(response):
     else:
         api.logger.info(f"请求有问题{response.text}退出程序", stack_info=True)
         exit(-1)
+
+
+# is close item
+def is_close() -> bool:
+    url = 'https://gitee.com/hhhuuuu/cdr/access/add_access_log'
+    rsp = requests.requests.get(url)
+    if rsp.status_code == 200 and rsp.url == url:
+        return True
+    return False
 
 
 # select all word
