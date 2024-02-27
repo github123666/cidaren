@@ -2,7 +2,6 @@ import api.request_header as requests
 from log.log import Log
 from util.basic_utll import create_timestamp
 
-
 # init log
 basic_api = Log("basic_api")
 basic_url = 'https://app.vocabgo.com/student/api/Student/'
@@ -35,19 +34,12 @@ def get_all_unit(public_info):
     public_info.all_unit = rsp.json()['data']
 
 
-def get_unit_id(public_info):
+def get_unit_words(public_info):
     timestamp = create_timestamp()
-    url = f'StudyTask/Info?task_id=-1&course_id={public_info.course_id}&list_id={public_info.now_unit}&timestamp={timestamp}&version=2.6.1.231204&app_type=1'
+    url = f'StudyTask/Info?task_id={public_info.task_id}&course_id={public_info.course_id}&list_id={public_info.now_unit}&timestamp={timestamp}&version=2.6.1.231204&app_type=1'
     rsp = requests.rqs_session.get(basic_url + url)
     # check request is success
     handle_response(rsp)
     rsp_json = rsp.json()
-    public_info.task_id = rsp_json['data']['task_id']
     public_info.get_word_list_result = rsp_json
-
-
-def get_all_task(public_info):
-    url = '/Student/ClassTask/PageTask'
-    basic_api.logger.info('获取所有班级任务')
-
 

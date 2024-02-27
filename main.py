@@ -2,7 +2,7 @@ import os
 
 import api.request_header as requests
 from answer_questions.answer_questions import *
-from api.basic_api import get_all_unit, get_unit_id, get_select_course
+from api.basic_api import get_all_unit, get_unit_words, get_select_course
 from api.login import verify_token, get_token
 from api.main_api import get_exam, select_all_word, get_class_task
 from log.log import Log
@@ -29,13 +29,14 @@ def complete_test(task_info: dict):
     for unit in public_info.all_unit['task_list']:
         if unit['task_name'] == task_name:
             public_info.now_unit = unit['list_id']
+            public_info.task_id = unit['task_id']
     unit_progress = task_info['progress']
     # myself exam task_id
     if task_info['task_type'] == 1:
         main.logger.info('完成班级任务的自学任务')
         complete_practice(public_info.now_unit, unit_progress, task_info['task_id'])
     else:
-        get_unit_id(public_info)  # return now unit all word
+        get_unit_words(public_info)  # return now unit all word
         # extract return word
         handle_word_result(public_info)
         public_info.task_id = task_info['task_id']
@@ -65,17 +66,17 @@ def complete_practice(unit: str, progress: int, task_id=None):
     :param progress: 单元进度
     :return: None
     """
-    main.logger.info(f"获取该{unit}单元的task_id")
+    main.logger.info(f"获取该{unit}单元的单词")
     public_info.now_unit = unit
-    get_unit_id(public_info)  # return self unit all word
-    if task_id:
-        public_info.task_id = task_id
+    public_info.task_id = task_id
+    get_unit_words(public_info)  # return self unit all word
     main.logger.info("处理words")
     handle_word_result(public_info)
     main.logger.info("选择该单元所有单词")
     # {"CET4_pre:CET4_pre_10":["survey","apply","defasdfa"]} word
     # not complete unit choice all word
-    if progress < 2:
+    if (progress < 2 and public_info.get_word_list_result['data']['exist_little_task'] != 1) or \
+            public_info.get_word_list_result['data']['exist_little_task'] == 2:
         select_all_word(f"{public_info.course_id}:{unit}", public_info.word_list, public_info.task_id)
     # get first exam
     get_exam(public_info)
@@ -139,7 +140,7 @@ def run():
     # myself task
     if public_info.is_myself_task:
         PublicInfo.task_type = 'StudyTask'
-        PublicInfo.task_type_int = 2
+        PublicInfo.task_type_int = 3
         main.logger.info('开始完成自选任务')
         # get course
         get_select_course(public_info)
@@ -149,13 +150,16 @@ def run():
         # get not complete
         filler_not_complete_unit(public_info)
         main.logger.info(f"没有完成的单元{public_info.not_complete_unit}")
-        for unit, progress in public_info.not_complete_unit.items():
-            complete_practice(unit, progress)
+        for unit, progress, task_id in public_info.not_complete_unit:
+            complete_practice(unit, progress, task_id)
     main.logger.info('运行完成')
+    os.system("pause")
 
 
 if __name__ == '__main__':
     # 初始化日志记录
+    # is delete item
+
     main = Log("main")
     main.logger.info('开始登录')
     # path

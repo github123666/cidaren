@@ -74,6 +74,7 @@ def is_word_exist(public_info, option) -> bool:
         query_word(public_info, option)
         return True
     else:
+        select_module.logger.info('转原型')
         revert_option = word_revert(option)
         if revert_option in public_info.word_list:
             query_word(public_info, revert_option)
