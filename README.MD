@@ -11,6 +11,7 @@
 
 **2024-02-28**
 + 解决小白获取code(也就是token的问题)
++ 解决code bug
 
 **2024-02-27**
 + 修复自选任务bug
@@ -128,7 +129,10 @@
 https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&redirect_uri=https%3A%2F%2Fapp.vocabgo.com%2Fstudent%2F%3Fauthorize%3D0&response_type=code&scope=snsapi_userinfo&state=STATE```
 ```
 ![simple](img/simple.png)
-code只能使用一次,且在运行时不能进入词达人(会挤掉),复制下面code到config.json中
+
+code只能使用一次,且在运行时不能进入词达人(会挤掉),复制下面code到config.json中    
+
+鼠标悬浮在上面,链接就会出来
 ![img.png](img/img.png)
 
 方法二:  

@@ -59,6 +59,7 @@ class PublicInfo:
 
     @token.setter
     def token(self, token):
+        self._token = token
         with open(os.path.join(self.path, "config.json"), 'r+', encoding="utf-8") as f:
             data = json.load(f)
             # index move begin cover source file

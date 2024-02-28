@@ -110,11 +110,12 @@ def init_token():
         # 验证token 是否过期
         if not verify_token(token):
             get_token(public_info)
+        else:
+            # init requests token
+            requests.set_token(public_info.token)
     else:
         # use code get token
         get_token(public_info)
-    # init requests token
-    requests.set_token(public_info.token)
 
 
 def run():

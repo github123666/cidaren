@@ -6,7 +6,7 @@ from log.log import Log
 from util.basic_utll import create_timestamp
 
 # basic url
-basic_url = 'https://gateway.vocabgo.com/student/api/'
+basic_url = 'https://app.vocabgo.com/student/api/'
 # log init
 login = Log("login")
 
