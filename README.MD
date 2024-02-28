@@ -8,7 +8,9 @@
 
 **目前存在的bug**  
 + 转成单词原型没有好用的库
-+ token小白不好获取
+
+**2024-02-28**
++ 解决小白获取code(也就是token的问题)
 
 **2024-02-27**
 + 修复自选任务bug
@@ -121,11 +123,12 @@
 
 获取token:   
 
-方法一：获取微信code,拼手速,点下面授权cdr的链接标签页转一圈半就关掉,打开其他网页百度什么的,查看浏览记录(**没有跳转到 cdr home 页面的记录则为成功，此时code还没使用,可以获取token**) 
+方法一：获取微信code: 打开pc端微信,点击下面链接(发给自己),查看浏览记录
 ```angular2html
-https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&redirect_uri=https%3A%2F%2Fapp.vocabgo.com%2Fstudent%2F%3Fauthorize%3D2&response_type=code&scope=snsapi_userinfo&state=STATE
+https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&redirect_uri=https%3A%2F%2Fapp.vocabgo.com%2Fstudent%2F%3Fauthorize%3D0&response_type=code&scope=snsapi_userinfo&state=STATE```
 ```
-code只能使用一次,且在运行时不能进入词达人(会挤掉),后面加可视化就可以解决。
+![simple](./img/simple.png)
+code只能使用一次,且在运行时不能进入词达人(会挤掉),复制下面code到config.json中
 ![img.png](img/img.png)
 
 方法二:  
