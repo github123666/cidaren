@@ -155,14 +155,14 @@ B站上cdr付费使用的软件,可以获取token(不如自己抓包)。风险�
 ```
 
 
-配置环境,releases有打包好的exe程序
+配置环境,不想配置环境的话releases有打包好的exe程序
 ```angular2html
 pip install -r requirements.txt
 ```
 记得安装模型
 ![img.png](./img/spacy.png)
-运行main.py (随机1~3秒提交一次答案)  
+运行main.py (随机1~5秒提交一次答案)  
   
 ## 结果
-随机抽取5本书的一个单元的全部题型,正确率95+
+随机抽取5本书的一个单元的全部题型,正确率95+(有极个别题过不了,需要手动过)
 ![result3](./img/result3.png)
