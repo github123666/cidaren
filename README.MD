@@ -9,6 +9,9 @@
 **目前存在的bug**  
 + 转成单词原型没有好用的库
 
+**2024-03-03**
++ 小更新
+
 **2024-02-28**
 + **解决一大难题**,小白获取code(也就是token的问题)
 + 解决code bug
@@ -152,10 +155,12 @@ B站上cdr付费使用的软件,可以获取token(不如自己抓包)。风险�
 ```
 
 
-配置环境
+配置环境,releases有打包好的exe程序
 ```angular2html
 pip install -r requirements.txt
 ```
+记得安装模型
+![img.png](./img/spacy.png)
 运行main.py (随机1~3秒提交一次答案)  
   
 ## 结果
