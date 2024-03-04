@@ -166,3 +166,6 @@ pip install -r requirements.txt
 ## 结果
 随机抽取5本书的一个单元的全部题型,正确率95+(有极个别题过不了,需要手动过)
 ![result3](./img/result3.png)
+
+## Stargazers over time
+[![Stargazers over time](https://starchart.cc/github123666/cidaren.svg?variant=adaptive)](https://starchart.cc/github123666/cidaren)
