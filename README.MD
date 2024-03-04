@@ -155,7 +155,7 @@ B站上cdr付费使用的软件,可以获取token(不如自己抓包)。风险�
 ```
 
 
-配置环境,不想配置环境的话releases有打包好的exe程序
+配置环境,不想配置环境的话releases有打包好的exe程序(只需要抓token)
 ```angular2html
 pip install -r requirements.txt
 ```
