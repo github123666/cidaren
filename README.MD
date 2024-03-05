@@ -178,6 +178,7 @@ pip install -r requirements.txt
 ![result3](./img/result3.png)
 
 班级测试自建任务
+
 ![img.png](./img/self_built.png)
 
 ## start
