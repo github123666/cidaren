@@ -11,9 +11,11 @@
 + 有个题型没思路(正确率没有100%)
 
 **2024-03-05**
-+ 过自建任务,正确率下降了,有个题型正确率掉了挺多
++ 过自建任务,正确率下降了,有个题型正确率掉了挺多(情况好90＋，不好80+，自己看图)
 + 思路还可以优化
 + 测试中
++ 只更新了exe,过两天传源码
++ 头大,**只更新了自建班级测试！！！**
 
 **2024-03-03**
 + 小更新
@@ -175,7 +177,7 @@ pip install -r requirements.txt
 随机抽取5本书的一个单元的全部题型,正确率95+(有极个别题过不了,需要手动过)
 ![result3](./img/result3.png)
 自建任务
-![img.png](./img/img.png)
+![img.png](./img/self_built.png)
 
 ## start
 [![Stargazers over time](https://starchart.cc/github123666/cidaren.svg?variant=adaptive)](https://starchart.cc/github123666/cidaren)
