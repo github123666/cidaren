@@ -7,8 +7,9 @@ class PublicInfo:
     task_type_int: int
 
     def __init__(self, path):
+        self.get_word_list_result = {}
         self.path = path
-        with open(os.path.join(self.path, "config.json"), 'r', encoding='utf-8') as f:
+        with open(os.path.join(self.path, "config", "config.json"), 'r', encoding='utf-8') as f:
             # user config
             user_config = json.load(f)
             self._token = user_config['token']
@@ -21,8 +22,7 @@ class PublicInfo:
         self.word_means = ''
         self.exam = ''
         # all word
-        self.word_list = ''
-        self.get_word_list_result: ''
+        self.word_list = []
         # translate
         self.zh_en = ''
         # all unit info
@@ -37,6 +37,10 @@ class PublicInfo:
         self.task_total_count = ''
         self.now_page = ''
         self.release_id = ''
+        # self_built
+        self.get_book_words_data = []
+        self.is_self_built = False  # bool
+        self.all_unit_name = []
 
     @property
     # only read

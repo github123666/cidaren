@@ -2,13 +2,39 @@ import os
 
 import api.request_header as requests
 from answer_questions.answer_questions import *
-from api.basic_api import get_all_unit, get_unit_words, get_select_course
+from api.basic_api import get_all_unit, get_unit_words, get_select_course, get_book_all_words
 from api.login import verify_token, get_token
 from api.main_api import get_exam, select_all_word, get_class_task
 from log.log import Log
 from publicInfo.publicInfo import PublicInfo
-from util.basic_utll import filler_not_complete_unit, filter_expire_task
+from util.basic_utll import filler_not_complete_unit, filter_expire_task, extract_book_word, query_word_unit
 from util.handle_word_list import handle_word_result
+
+
+def class_task_answer():
+    """
+    班级任务答题
+    :return:
+    """
+    # get first exam
+    get_exam(public_info)
+    public_info.topic_code = public_info.exam['topic_code']
+    main.logger.info("开始答题")
+    while True:
+        main.logger.info("获取题目类型")
+        if public_info.exam == 'complete':
+            # unit complete skip next unit
+            break
+        mode = public_info.exam['topic_mode']
+        main.logger.info(f'题目类型{mode}')
+        if mode == 0:
+            # skip read cord
+            jump_read(public_info)
+            continue
+        option = answer(public_info, mode)
+        submit(public_info, option)
+        # sleep 1~5s
+        time.sleep(random.randint(1, 5))
 
 
 def complete_test(task_info: dict):
@@ -17,7 +43,6 @@ def complete_test(task_info: dict):
     :param task_info: 测试任务信息
     :return: None
     """
-
     task_name = task_info['task_name']
     public_info.course_id = task_info['course_id']
     main.logger.info(f'完成{task_name}')
@@ -26,36 +51,50 @@ def complete_test(task_info: dict):
     # get all the units of the book
     main.logger.info('获取该书的所有单元')
     get_all_unit(public_info)
+    public_info.release_id = task_info['release_id']
+    all_test_name = []
     for unit in public_info.all_unit['task_list']:
-        if unit['task_name'] == task_name:
+        unit_name = unit['task_name']
+        all_test_name.append(unit_name)
+        public_info.all_unit_name.append(unit['list_id'])
+        if unit_name == task_name:
             public_info.now_unit = unit['list_id']
             public_info.task_id = unit['task_id']
+            break
     unit_progress = task_info['progress']
-    # myself exam task_id
-    if task_info['task_type'] == 1:
-        main.logger.info('完成班级任务的自学任务')
-        complete_practice(public_info.now_unit, unit_progress, task_info['task_id'])
+    # self built test
+    if task_name not in all_test_name:
+        public_info.is_self_built = True
+        main.logger.info(f"{task_name}为自建任务")
+        if task_info['task_type'] == 1:
+            main.logger.info("完成自学任务的自建任务")
+            main.logger.info('获取该自建任务的单词')
+            public_info.task_id = task_info['task_id']
+            get_unit_words(public_info)
+            main.logger.info("获取提交单词")
+            query_word_unit(public_info)
+            if (unit_progress < 2 and public_info.get_word_list_result['data']['exist_little_task'] != 1) or \
+                    public_info.get_word_list_result['data']['exist_little_task'] == 2:
+                select_all_word(public_info.word_list, public_info.task_id)
+        else:
+            main.logger.info("完成班级测试自建任务")
+            # get all the words for the book
+        get_book_all_words(public_info)
+        # extract word
+        extract_book_word(public_info)
+        # answer
+        class_task_answer()
     else:
-        get_unit_words(public_info)  # return now unit all word
-        # extract return word
-        handle_word_result(public_info)
-        public_info.task_id = task_info['task_id']
-        # get first exam
-        public_info.release_id = task_info['release_id']
-        get_exam(public_info)
-        public_info.topic_code = public_info.exam['topic_code']
-        main.logger.info("开始答题")
-        while True:
-            main.logger.info("获取题目类型")
-            if public_info.exam == 'complete':
-                # unit complete skip next unit
-                break
-            mode = public_info.exam['topic_mode']
-            main.logger.info(f'题目类型{mode}')
-            option = answer(public_info, mode)
-            submit(public_info, option)
-            # sleep 1~5s
-            time.sleep(random.randint(1, 5))
+        if task_info['task_type'] == 1:
+            main.logger.info('完成班级任务的自学任务')
+            complete_practice(public_info.now_unit, unit_progress, task_info['task_id'])
+        else:
+            # normal test
+            get_unit_words(public_info)  # return now unit all word
+            # extract return word
+            handle_word_result(public_info)
+            public_info.task_id = task_info['task_id']
+            class_task_answer()
 
 
 def complete_practice(unit: str, progress: int, task_id=None):
@@ -69,7 +108,8 @@ def complete_practice(unit: str, progress: int, task_id=None):
     main.logger.info(f"获取该{unit}单元的单词")
     public_info.now_unit = unit
     public_info.task_id = task_id
-    get_unit_words(public_info)  # return self unit all word
+    # get all the words in the unit
+    get_unit_words(public_info)
     main.logger.info("处理words")
     handle_word_result(public_info)
     main.logger.info("选择该单元所有单词")
@@ -77,7 +117,7 @@ def complete_practice(unit: str, progress: int, task_id=None):
     # not complete unit choice all word
     if (progress < 2 and public_info.get_word_list_result['data']['exist_little_task'] != 1) or \
             public_info.get_word_list_result['data']['exist_little_task'] == 2:
-        select_all_word(f"{public_info.course_id}:{unit}", public_info.word_list, public_info.task_id)
+        select_all_word({f"{public_info.course_id}:{unit}": public_info.word_list}, public_info.task_id)
     # get first exam
     get_exam(public_info)
     public_info.topic_code = public_info.exam['topic_code']
@@ -137,6 +177,8 @@ def run():
         filter_expire_task(public_info)
         # start complete class task
         for task_info in public_info.class_task:
+            # close self_built test
+            public_info.is_self_built = False
             complete_test(task_info)
     # myself task
     if public_info.is_myself_task:
@@ -152,6 +194,8 @@ def run():
         filler_not_complete_unit(public_info)
         main.logger.info(f"没有完成的单元{public_info.not_complete_unit}")
         for unit, progress, task_id in public_info.not_complete_unit:
+            # close self_built test
+            public_info.is_self_built = False
             complete_practice(unit, progress, task_id)
     main.logger.info('运行完成')
     os.system("pause")
@@ -160,7 +204,6 @@ def run():
 if __name__ == '__main__':
     # 初始化日志记录
     # is delete item
-
     main = Log("main")
     main.logger.info('开始登录')
     # path

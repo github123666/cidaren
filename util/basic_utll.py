@@ -33,3 +33,22 @@ def delete_other_char(result: str) -> str:
     for delete_str in delete_list:
         result = result.replace(delete_str, '')
     return result.replace(' ', ',')
+
+
+# extract word
+def extract_book_word(public_info):
+    public_info.word_list = [d['word'] for d in public_info.get_book_words_data]
+
+
+# look up the word in the unit
+def query_word_unit(public_info):
+    all_unit = {}
+    # create all unit dict
+    for unit in public_info.all_unit_name:
+        all_unit.update({public_info.course_id + ':' + unit: []})
+    # word classify
+    for word_info in public_info.get_word_list_result["data"]['word_list']:
+        all_unit[public_info.course_id + ":" + word_info['list_id']].append(word_info['word'])
+    # clear unit is null
+    all_unit = {key: value for key, value in all_unit.items() if value}
+    public_info.word_list = all_unit

@@ -1,6 +1,7 @@
 import requests
 
 from decryptencrypt.encrypt_md5 import encrypt_md5
+
 Token = ''
 user_age = 'Mozilla/5.0 (Linux; Android 8.1.2; LIO-AN00 Build/LIO-AN00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.131 Safari/537.36 MMWEBID/4462 MicroMessenger/8.0.20.2100(0x28001438) Process/toolsmp WeChat/arm64 Weixin Android Tablet NetType/WIFI Language/zh_CN ABI/arm64'
 headers = {"Host": "app.vocabgo.com",
@@ -17,14 +18,14 @@ headers = {"Host": "app.vocabgo.com",
            "Accept-Encoding": "gzip, deflate, br"
            }
 
-rqs_session = rqs2_session = rqs3_session = class_task_request = ''
+rqs_session = rqs2_session = rqs3_session = class_task_request = rsq_self_built = ''
 
 
 def set_token(token):
     # update global value
     global Token
     Token = token
-    global rqs_session, rqs2_session, rqs3_session, class_task_request
+    global rqs_session, rqs2_session, rqs3_session, class_task_request, rsq_self_built
     requests.DEFAULT_RETRIES = 5
     rqs_session = requests.session()
     rqs_session.headers = headers
@@ -42,3 +43,11 @@ def set_token(token):
                                  "Content-Type": "application/json", "Content-Length": "460"})
     class_task_request = requests.session()
     class_task_request.headers = headers
+    # self_built request
+    rsq_self_built = requests.session()
+    rsq_self_built.headers = headers.copy()
+    rsq_self_built.headers.update(
+        {"Origin": "https://app.vocabgo.com", "Referer": "https://app.vocabgo.com", "Host": 'resource.vocabgo.com',
+         "X-Requested-With": 'com.tencent.mm'})
+    rsq_self_built.headers.pop('Authorization-V')
+    rsq_self_built.headers.pop('Abc')

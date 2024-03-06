@@ -1,6 +1,7 @@
 import json
 import random
 import time
+from functools import wraps
 
 import api.request_header as requests
 from decryptencrypt.debase64 import debase64
@@ -34,18 +35,16 @@ def handle_response(response):
 
 
 
-
 # select all word
-def select_all_word(key, word_list, task_id: int, ) -> None:
+def select_all_word(word_info, task_id: int, ) -> None:
     api.logger.info("勾选全部单词并提交")
     timestamp = create_timestamp()
     url = f'{PublicInfo.task_type}/SubmitChoseWord'
     # 取消键值对的空格(紧密排版)
-    word_map = json.dumps({key: word_list}, separators=(',', ':'))
+    word_map = json.dumps(word_info, separators=(',', ':'))
     source_str = f'chose_err_item=2&task_id={task_id}&timestamp={timestamp}&version=2.6.1.231204&word_map={word_map}ajfajfamsnfaflfasakljdlalkflak'
     sign = encrypt_md5(source_str)
-    data = {"task_id": task_id, "word_map": {
-        key: word_list}, "chose_err_item": 2,
+    data = {"task_id": task_id, "word_map": word_info, "chose_err_item": 2,
             "timestamp": timestamp, "version": "2.6.1.231204", "sign": sign,
             "app_type": 1}
     rsp = requests.rqs3_session.post(basic_url + url, data=json.dumps(data))
@@ -89,7 +88,7 @@ def get_class_task(public_info, page_count: int):
 def get_exam(public_info):
     api.logger.info("获取第一题")
     url = f'{PublicInfo.task_type}/StartAnswer'
-    params = {'task_id': public_info.task_id, 'task_type': PublicInfo.task_type_int,
+    params = {'task_id': public_info.task_id or -1, 'task_type': PublicInfo.task_type_int,
               'opt_img_w': '684',
               'opt_font_size': '37', 'opt_font_c': '%23000000', 'it_img_w': '804', 'it_font_size': '42',
               'timestamp': create_timestamp(), 'version': '2.6.1.240122', 'app_type': '1'}
@@ -129,10 +128,25 @@ def next_exam(public_info):
         public_info.exam = debase64(rsp.json())
 
 
+def check_is_self_built(func):
+    @wraps(func)
+    def is_self_built(public_info, word):
+        if public_info.is_self_built:
+            # get word index in the word_list
+            word_index = public_info.word_list.index(word)
+            # get word in the unit
+            public_info.now_unit = public_info.get_book_words_data[word_index]["list_id"]
+        return func(public_info, word)
+
+    return is_self_built
+
+
 # query word
+@check_is_self_built
 def query_word(public_info, word):
     time.sleep(random.randint(0, 2))
     api.logger.info(f"查询单词{word}")
+    # query word in the unit
     url = f'Course/StudyWordInfo?course_id={public_info.course_id}&list_id={public_info.now_unit}&word={word}&timestamp={create_timestamp()}&version=2.6.1.231204&app_type=1'
     rsp = requests.rqs_session.get(basic_url + url)
     # check request is success
