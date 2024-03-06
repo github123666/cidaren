@@ -158,6 +158,7 @@ https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&red
 code只能使用一次,且在运行时不能进入词达人(会挤掉),复制下面code到config/config.json中    
 
 鼠标悬浮在上面,链接就会出来
+
 ![img.png](img/img.png)
 方法二:  
 自己抓包,抓token(如果在手机端抓的token,可以在手机端查看,pc端同理)很简单
