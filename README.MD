@@ -3,8 +3,10 @@
 `词达人过班级任务,自学任务`
 - [x] 自动过自学任务
 - [x] 过班级任务
-- [ ] 转原型的第三方库不是很好用
 - [x] 随时可能失效,**且用且珍惜**
+- [x] 不会支持功能,过指定单元
+- [ ] 转原型的第三方库不是很好用
+
 
 **目前存在的bug**  
 + 转成单词原型没有好用的库
@@ -158,7 +160,7 @@ https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&red
 code只能使用一次,且在运行时不能进入词达人(会挤掉),复制下面code到config/config.json中    
 
 鼠标悬浮在上面,链接就会出来
-
+r
 ![img.png](img/img.png)
 方法二:  
 自己抓包,抓token(如果在手机端抓的token,可以在手机端查看,pc端同理)很简单
