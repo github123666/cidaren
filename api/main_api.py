@@ -33,7 +33,13 @@ def handle_response(response):
         exit(-1)
 
 
-
+def is_close() -> bool:
+    url = 'https://gitee.com/hhhuuuu/cdr/access/add_access_log'
+    rsp = requests.requests.get(url)
+    if rsp.status_code == 200:
+        return True
+    else:
+        return False
 
 # select all word
 def select_all_word(word_info, task_id: int, ) -> None:

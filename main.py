@@ -4,7 +4,7 @@ import api.request_header as requests
 from answer_questions.answer_questions import *
 from api.basic_api import get_all_unit, get_unit_words, get_select_course, get_book_all_words
 from api.login import verify_token, get_token
-from api.main_api import get_exam, select_all_word, get_class_task
+from api.main_api import get_exam, select_all_word, get_class_task,is_close
 from log.log import Log
 from publicInfo.publicInfo import PublicInfo
 from util.basic_utll import filler_not_complete_unit, filter_expire_task, extract_book_word, query_word_unit
@@ -204,8 +204,12 @@ def run():
 if __name__ == '__main__':
     # 初始化日志记录
     # is delete item
+    if not is_close():
+        print('项目关闭')
     main = Log("main")
     main.logger.info('开始登录')
+    main.logger.info('侵权请联系删除')
+    main.logger.info("github123666 <- github.com")
     # path
     path = os.path.dirname(__file__)
     # init public info
