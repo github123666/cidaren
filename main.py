@@ -4,7 +4,7 @@ import api.request_header as requests
 from answer_questions.answer_questions import *
 from api.basic_api import get_all_unit, get_unit_words, get_select_course, get_book_all_words
 from api.login import verify_token, get_token
-from api.main_api import get_exam, select_all_word, get_class_task,is_close
+from api.main_api import get_exam, select_all_word, get_class_task, is_close, skip_exam
 from log.log import Log
 from publicInfo.publicInfo import PublicInfo
 from util.basic_utll import filler_not_complete_unit, filter_expire_task, extract_book_word, query_word_unit
@@ -32,7 +32,11 @@ def class_task_answer():
             jump_read(public_info)
             continue
         option = answer(public_info, mode)
-        submit(public_info, option)
+        if option:
+            submit(public_info, option)
+        else:
+            public_info.topic_code = public_info.exam['topic_code']
+            skip_exam(public_info)
         # sleep 1~5s
         time.sleep(random.randint(1, 5))
 
@@ -161,6 +165,7 @@ def init_token():
 def run():
     init_token()
     main.logger.info('开始答题')
+    # test(public_info)
     # class task
     if public_info.is_class_task:
         PublicInfo.task_type = 'ClassTask'

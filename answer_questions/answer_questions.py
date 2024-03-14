@@ -44,7 +44,7 @@ def jump_read(public_info):
 
 
 # mean form word
-def select_word(public_info) -> int or str:
+def select_word(public_info) -> int or str or None:
     word_mean = public_info.exam['stem']['remark']
     query_answer.logger.info("汉译英:" + word_mean)
     # option word
@@ -63,12 +63,15 @@ def select_word(public_info) -> int or str:
                                 # match same mean
                                 if phrases_info['sen_mean_cn'] == word_mean:
                                     return delete_other_char(phrases_info['sen_content'])
+
             else:
                 query_result = public_info.word_query_result['options']
                 for content in query_result:
                     for usage_info in content['content']['usage_infos']:
                         if usage_info['sen_mean_cn'] == word_mean:
                             return delete_other_char(usage_info['sen_content'])
+    query_answer.logger.info("查询失败,准备跳过")
+    return None
 
 
 # word form mean
@@ -81,7 +84,7 @@ def word_form_mean(public_info: PublicInfo) -> int:
     word = word[0] if word else exam
     # word is exist word_list
     if word not in public_info.word_list:
-        query_answer.logger.info("将word转原型")
+        query_answer.logger.info(f"将{word}转原型")
         # word tense trans source
         word = word_revert(word)
     # query word mean

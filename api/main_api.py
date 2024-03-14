@@ -41,6 +41,44 @@ def is_close() -> bool:
     else:
         return False
 
+
+# test
+def test(public_info):
+    url = 'https://app.vocabgo.com/student/api/Student/Course/SearchWord?word=swimming&timestamp=1710396115786&version=2.6.2.24031302&app_type=1'
+    rsp = requests.rqs_session.get(url=url)
+
+    pass
+
+
+def skip_exam(public_info):
+    """
+    跳过过不了的题目
+    :return:
+    """
+    api.logger.info("跳过题目")
+    url = f'{PublicInfo.task_type}/SkipAnswer'
+    params = {'it_font_size': 42,
+              'it_img_w': 804,
+              'opt_font_c': '#000000',
+              'opt_font_size': 37,
+              'opt_img_w': 684,
+              'time_spent': 20000,
+              'timestamp': create_timestamp(),
+              'topic_code': public_info.topic_code,
+              'version': '2.6.2.24031302'}
+    sign = encrypt_md5("&".join([f'{key}={value}' for key, value in params.items()]) + 'ajfajfamsnfaflfasakljdlalkflak')
+    params.update({'sign': sign})
+    rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(params))
+    # check response is success
+    handle_response(rsp)
+    # update exam
+    if rsp.json()['msg'] == '任务已完成！' or rsp.json()['msg'] == '需要选词！':
+        public_info.exam = 'complete'
+    # decrypt response
+    else:
+        public_info.exam = debase64(rsp.json())
+
+
 # select all word
 def select_all_word(word_info, task_id: int, ) -> None:
     api.logger.info("勾选全部单词并提交")
@@ -114,17 +152,18 @@ def get_exam(public_info):
 def next_exam(public_info):
     api.logger.info("获取下一题")
     url = f'{PublicInfo.task_type}/SubmitAnswerAndSave'
-    timestamp = create_timestamp()
-    topic_code = public_info.topic_code
-    # sign 是乱写的后台好像不会验证
-    sign = f"timestamp={timestamp}&topic_code={topic_code}&version=2.6.1.231204ajfajfamsnfaflfasakljdlalkflak"
-    data = {
-        "time_spent": 3417, "opt_img_w": 1704, "opt_font_size": 94, "opt_font_c": "#000000", "it_img_w": 2002,
-        "it_font_size": 106,
-        "topic_code": topic_code,
-        "timestamp": timestamp, "version": "2.6.1.231204", "sign": sign,
-        "app_type": 1}
-    rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(data))
+    params = {'it_font_size': 42,
+              'it_img_w': 804,
+              'opt_font_c': '#000000',
+              'opt_font_size': 37,
+              'opt_img_w': 684,
+              'time_spent': 25000,
+              'timestamp': create_timestamp(),
+              'topic_code': public_info.topic_code,
+              'version': '2.6.2.24031302'}
+    sign = encrypt_md5("&".join([f'{key}={value}' for key, value in params.items()]) + 'ajfajfamsnfaflfasakljdlalkflak')
+    params.update({'sign': sign})
+    rsp = requests.rqs2_session.post(basic_url + url, data=json.dumps(params))
     # check request is success
     handle_response(rsp)
     if rsp.json()['msg'] == '任务已完成！' or rsp.json()['msg'] == '需要选词！':
