@@ -25,11 +25,20 @@ def handle_query_word_mean(public_info) -> None:
 
 # extract options
 def filler_option(public_info) -> list:
+    """
+    提取返回的选以及排序优化
+    :param public_info:
+    :return:
+    """
     # exam options
     options = []
     # filler option
-    for option in public_info.exam["options"]:
-        options.append(option["content"])
+    for option_info in public_info.exam["options"]:
+        option = option_info['content']
+        if option in public_info.word_list:
+            options.insert(0, option)
+        else:
+            options.append(option)
     return options
 
 

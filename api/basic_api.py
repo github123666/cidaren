@@ -1,3 +1,5 @@
+import re
+
 import api.request_header as requests
 from log.log import Log
 from util.basic_utll import create_timestamp
@@ -14,6 +16,22 @@ def handle_response(response):
     else:
         basic_api.logger.info(f"请求有问题{response.text}退出程序")
         exit(-1)
+
+
+# use api get word prototype
+def use_api_get_prototype(word: str) -> str or None:
+    """
+    利用api获取单词原型
+    :param word:
+    :return: word prototype
+    """
+    basic_api.logger.info(f"单词{word}走api转原型")
+    url = f'https://app.vocabgo.com/student/api/Student/Course/SearchWord?word={word}&timestamp=1710396115786&version=2.6.2.24031302&app_type=1'
+    rsp = requests.rqs_session.get(url=url)
+    # check rsp is success
+    handle_response(rsp)
+    result = re.findall('span>(.+?)</span>', rsp.json()['data']['word_mean']['meaning'])
+    return None if not result else result[0]
 
 
 def get_select_course(public_info):

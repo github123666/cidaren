@@ -32,11 +32,11 @@ def class_task_answer():
             jump_read(public_info)
             continue
         option = answer(public_info, mode)
-        if option:
-            submit(public_info, option)
-        else:
+        if option is None:
             public_info.topic_code = public_info.exam['topic_code']
             skip_exam(public_info)
+        else:
+            submit(public_info, option)
         # sleep 1~5s
         time.sleep(random.randint(1, 5))
 

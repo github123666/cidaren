@@ -1,6 +1,7 @@
 import json
 import random
 import time
+import re
 from functools import wraps
 
 import api.request_header as requests
@@ -26,7 +27,8 @@ def handle_response(response):
     elif code == 20001 and rsp_json['data'] or code == 20004:
         pass
     elif code == 0 and rsp_json['msg'] == '加载单词卡片失败，请重新加载':
-        api.logger.error("查找不到单词(第三方库转不了时态),请手动答题")
+        api.logger.error("查找不到单词(第三方库转原型失败),请手动答题")
+        api.logger.error("请将问题提交到github")
         exit('请手动答题,已退出')
     else:
         api.logger.info(f"请求有问题{response.text}退出程序", stack_info=True)
@@ -42,12 +44,7 @@ def is_close() -> bool:
         return False
 
 
-# test
-def test(public_info):
-    url = 'https://app.vocabgo.com/student/api/Student/Course/SearchWord?word=swimming&timestamp=1710396115786&version=2.6.2.24031302&app_type=1'
-    rsp = requests.rqs_session.get(url=url)
 
-    pass
 
 
 def skip_exam(public_info):
