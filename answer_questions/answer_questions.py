@@ -84,9 +84,14 @@ def word_form_mean(public_info: PublicInfo) -> int:
     word = word[0] if word else exam
     # word is exist word_list
     if word not in public_info.word_list:
-        query_answer.logger.info(f"将{word}转原型")
-        # word tense trans source
-        word = word_revert(word)
+        if word.endswith("ed") and word[:-2] in public_info.word_list:
+            word = word[:-2]
+        elif word.endswith("ing") and word[:-3] in public_info.word_list:
+            word = word[:-3]
+        else:
+            query_answer.logger.info(f"将{word}转原型")
+            # word tense trans source
+            word = word_revert(word)
     # query word mean
     query_word(public_info, word)
     # filler mean
