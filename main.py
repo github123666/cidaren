@@ -141,9 +141,13 @@ def complete_practice(unit: str, progress: int, task_id=None):
             continue
         option = answer(public_info, mode)
         # sleep 1~5s
+        if option is None:
+            public_info.topic_code = public_info.exam['topic_code']
+            skip_exam(public_info)
+        else:
+            submit(public_info, option)
+        # sleep 1~5s
         time.sleep(random.randint(1, 5))
-        # submit answer
-        submit(public_info, option)
 
 
 # check token is expire
