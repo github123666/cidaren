@@ -168,8 +168,11 @@ def init_token():
 
 def run():
     init_token()
-    main.logger.info('开始答题')
     # test(public_info)
+    public_info.course_id = 'SZCH'
+    get_book_all_words(public_info)
+    raise 'test'
+    main.logger.info('开始答题')
     # class task
     if public_info.is_class_task:
         PublicInfo.task_type = 'ClassTask'
@@ -213,8 +216,8 @@ def run():
 if __name__ == '__main__':
     # 初始化日志记录
     # is delete item
-    if not is_close():
-        print('项目关闭')
+    # if not is_close():
+    #     print('项目关闭')
     main = Log("main")
     main.logger.info('开始登录')
     main.logger.info('侵权请联系删除')
