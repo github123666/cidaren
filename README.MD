@@ -167,12 +167,16 @@
 
 获取token:   
 
-方法一：获取微信code: 打开pc端微信,点击下面链接(发给自己),查看浏览记录
+方法一：获取微信code: 打开pc端微信,点击下面链接(发给自己),查看浏览记录 
+
+1. 重要的事情上3遍**如果是截图或者拍照识别(有误差)出来的code一定要检查与链接是否一样！！！**
+2. 重要的事情上3遍**如果是截图或者拍照识别(有误差)出来的code一定要检查与链接是否一样！！！**
+3. 重要的事情上3遍**如果是截图或者拍照识别(有误差)出来的code一定要检查与链接是否一样！！！**
+
 ```angular2html
 https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2a694105a6abbe6d&redirect_uri=https%3A%2F%2Fapp.vocabgo.com%2Fstudent%2F%3Fauthorize%3D0&response_type=code&scope=snsapi_userinfo&state=STATE```
 ```
 ![simple](img/simple.png)
-
 code只能使用一次,且在运行时不能进入词达人(会挤掉),复制下面code到config/config.json中    
 
 鼠标悬浮在上面,链接就会出来
