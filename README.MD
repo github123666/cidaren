@@ -186,7 +186,8 @@ code只能使用一次,且在运行时不能进入词达人(会挤掉),复制下
 属于下下策，B站上cdr付费使用的软件可以获取token(不如自己抓包)。风险自己承担,中毒我不管哦
 
 **配置运行环境**
-不想配置环境的话**releases**有打包好的exe程序
+
+> 不想配置环境的话**releases**有打包好的exe程序
 
 配置环境(**用exe的话**看下面配置config.json)
 ```angular2html
@@ -197,6 +198,7 @@ pip install -r requirements.txt
 运行main.py (随机1~5秒提交一次答案)  
 
 **配置config.json**
+
 + 自己配置环境了的话文件在**config/config.jso**
 + 用exe的话在**解压**后的_internal/config/config.json里配置
 ```angular2html
