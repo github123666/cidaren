@@ -26,7 +26,7 @@ class PublicInfo:
         # translate
         self.zh_en = ''
         # all unit info
-        self.all_unit = ''
+        self.all_unit = []
         self.not_complete_unit = {}
         self.task_id = ''
         self.now_unit = ''

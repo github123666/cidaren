@@ -1,4 +1,6 @@
+import json
 import re
+import time
 
 import api.request_header as requests
 from log.log import Log
@@ -65,6 +67,9 @@ def get_unit_words(public_info):
     handle_response(rsp)
     rsp_json = rsp.json()
     public_info.get_word_list_result = rsp_json
+
+
+
 
 
 def get_book_all_words(public_info):
