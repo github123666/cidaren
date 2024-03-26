@@ -1,7 +1,6 @@
 import json
 import random
 import time
-import re
 from functools import wraps
 
 import api.request_header as requests
@@ -35,6 +34,9 @@ def handle_response(response):
         exit(-1)
 
 
+
+
+
 def is_close() -> bool:
     url = 'https://gitee.com/hhhuuuu/cdr/access/add_access_log'
     rsp = requests.requests.get(url)
@@ -42,9 +44,6 @@ def is_close() -> bool:
         return True
     else:
         return False
-
-
-
 
 
 def skip_exam(public_info):

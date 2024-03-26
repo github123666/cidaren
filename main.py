@@ -4,7 +4,7 @@ import api.request_header as requests
 from answer_questions.answer_questions import *
 from api.basic_api import get_all_unit, get_unit_words, get_select_course, get_book_all_words
 from api.login import verify_token, get_token
-from api.main_api import get_exam, select_all_word, get_class_task, is_close, skip_exam
+from api.main_api import get_exam, select_all_word, get_class_task, skip_exam
 from log.log import Log
 from publicInfo.publicInfo import PublicInfo
 from util.basic_utll import filler_not_complete_unit, filter_expire_task, extract_book_word, query_word_unit
@@ -168,11 +168,6 @@ def init_token():
 
 def run():
     init_token()
-    # test(public_info)
-    public_info.course_id = 'SZCH'
-    get_book_all_words(public_info)
-    raise 'test'
-    main.logger.info('开始答题')
     # class task
     if public_info.is_class_task:
         PublicInfo.task_type = 'ClassTask'
