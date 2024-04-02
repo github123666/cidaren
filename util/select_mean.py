@@ -32,13 +32,16 @@ def filler_option(public_info) -> list:
     """
     # exam options
     options = []
+    source = []
     # filler option
     for option_info in public_info.exam["options"]:
         option = option_info['content']
+        source.append(option)
         if option in public_info.word_list:
             options.insert(0, option)
         else:
             options.append(option)
+    public_info.source_option = source
     return options
 
 
@@ -59,14 +62,14 @@ def select_mean(public_info) -> int:
 # select match word
 def select_match_word(public_info, word_mean) -> int:
     options = filler_option(public_info)
-    for index, word in enumerate(options, 0):
+    for word in options:
         # query word mean
         query_word(public_info, word)
         handle_query_word_mean(public_info)
         # is match word mean
         for mean in public_info.word_means:
             if sorted(word_mean.replace(" ", '')) == sorted(mean.replace(" ", '')):
-                return index
+                return public_info.source_option.index(word)
     select_module.logger.info("匹配失败,猜第3个选项")
     return 2
 

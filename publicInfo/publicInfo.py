@@ -41,6 +41,7 @@ class PublicInfo:
         self.get_book_words_data = []
         self.is_self_built = False  # bool
         self.all_unit_name = []
+        self.source_option = []
 
     @property
     # only read
